@@ -1,0 +1,201 @@
+"use client";
+import { useMemo, useState } from "react";
+import Image from "next/image";
+import { motion } from "framer-motion";
+import { Heart, Minus, Plus, Ruler } from "lucide-react";
+import type { Product } from "@/lib/types";
+import { formatPrice, cn } from "@/lib/utils";
+import { useCartStore } from "@/store/cart-store";
+import { useWishlistStore } from "@/store/wishlist-store";
+import SizeGuideModal from "@/components/product/SizeGuideModal";
+
+export default function ProductDetailClient({ product }: { product: Product }) {
+  const images = (product.product_images ?? []).sort((a, b) => a.sort_order - b.sort_order);
+  const variants = product.product_variants ?? [];
+  const colors = Array.from(new Set(variants.map((v) => v.color)));
+  const sizes = Array.from(new Set(variants.map((v) => v.size)));
+
+  const [activeImage, setActiveImage] = useState(0);
+  const [color, setColor] = useState(colors[0] ?? "");
+  const [size, setSize] = useState(sizes[0] ?? "");
+  const [showSizeGuide, setShowSizeGuide] = useState(false);
+  const [qty, setQty] = useState(1);
+
+  const addLine = useCartStore((s) => s.addLine);
+  const toggle = useWishlistStore((s) => s.toggle);
+  const has = useWishlistStore((s) => s.has(product.id));
+
+  const selectedVariant = useMemo(
+    () => variants.find((v) => v.color === color && v.size === size),
+    [variants, color, size]
+  );
+
+  const price = selectedVariant?.price ?? product.base_price;
+  const inStock = (selectedVariant?.stock ?? 0) > 0;
+
+  return (
+    <main className="mx-auto max-w-7xl px-6 pb-24 pt-32 md:px-10">
+      <div className="grid gap-10 md:grid-cols-2 md:gap-16">
+        <div>
+          <div className="relative aspect-[3/4] overflow-hidden rounded-2xl bg-[--color-beige]">
+            {images[activeImage] && (
+              <Image
+                src={images[activeImage].url}
+                alt={images[activeImage].alt ?? product.name}
+                fill
+                className="object-cover"
+                priority
+              />
+            )}
+          </div>
+          {images.length > 1 && (
+            <div className="mt-4 flex gap-3">
+              {images.map((img, i) => (
+                <button
+                  key={img.id}
+                  onClick={() => setActiveImage(i)}
+                  className={cn(
+                    "relative h-20 w-16 overflow-hidden rounded-lg border-2",
+                    activeImage === i ? "border-[--color-gold]" : "border-transparent"
+                  )}
+                >
+                  <Image src={img.url} alt={img.alt ?? product.name} fill className="object-cover" />
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          {product.categories && (
+            <p className="text-xs uppercase tracking-[0.3em] text-[--color-gold]">
+              {product.categories.name}
+            </p>
+          )}
+          <h1 className="font-display mt-3 text-3xl md:text-4xl">{product.name}</h1>
+          <div className="mt-4 flex items-center gap-3">
+            <p className="text-xl">{formatPrice(price)}</p>
+            {product.compare_at_price && (
+              <p className="text-sm text-black/40 line-through">
+                {formatPrice(product.compare_at_price)}
+              </p>
+            )}
+          </div>
+
+          <p className="mt-6 max-w-md text-sm text-black/65">{product.description}</p>
+
+          {colors.length > 0 && (
+            <div className="mt-8">
+              <p className="mb-3 text-xs uppercase tracking-wide text-black/50">Colour — {color}</p>
+              <div className="flex flex-wrap gap-2">
+                {colors.map((c) => {
+                  const swatch = variants.find((v) => v.color === c)?.color_hex ?? "#ccc";
+                  return (
+                    <button
+                      key={c}
+                      onClick={() => setColor(c)}
+                      className={cn(
+                        "flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs transition",
+                        color === c ? "border-[--color-gold] bg-[--color-gold]/10" : "border-black/15"
+                      )}
+                    >
+                      <span className="h-3.5 w-3.5 rounded-full border border-black/10" style={{ backgroundColor: swatch }} />
+                      {c}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {sizes.length > 0 && (
+            <div className="mt-8">
+              <div className="mb-3 flex items-center justify-between">
+                <p className="text-xs uppercase tracking-wide text-black/50">Size — {size}</p>
+                <button
+                  onClick={() => setShowSizeGuide(true)}
+                  className="flex items-center gap-1 text-xs text-black/50 underline underline-offset-2"
+                >
+                  <Ruler className="h-3 w-3" /> Size Guide
+                </button>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {sizes.map((s) => {
+                  const stockForSize = variants.find((v) => v.size === s && v.color === color)?.stock ?? 0;
+                  return (
+                    <button
+                      key={s}
+                      disabled={stockForSize === 0}
+                      onClick={() => setSize(s)}
+                      className={cn(
+                        "h-10 w-10 rounded-full border text-sm transition",
+                        size === s
+                          ? "border-[--color-gold] bg-[--color-gold] text-white"
+                          : "border-black/20 hover:border-black/50",
+                        stockForSize === 0 && "cursor-not-allowed opacity-30 line-through"
+                      )}
+                    >
+                      {s}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          <div className="mt-8 flex items-center gap-2 rounded-full border border-black/15 px-3 py-2 w-fit">
+            <button onClick={() => setQty((q) => Math.max(1, q - 1))} aria-label="Decrease">
+              <Minus className="h-4 w-4" />
+            </button>
+            <span className="w-6 text-center text-sm">{qty}</span>
+            <button onClick={() => setQty((q) => q + 1)} aria-label="Increase">
+              <Plus className="h-4 w-4" />
+            </button>
+          </div>
+
+          <div className="mt-8 flex gap-3">
+            <button
+              disabled={!inStock || !selectedVariant}
+              onClick={() => {
+                if (!selectedVariant) return;
+                addLine({
+                  productId: product.id,
+                  variantId: selectedVariant.id,
+                  slug: product.slug,
+                  name: product.name,
+                  size,
+                  color,
+                  price,
+                  image: images[0]?.url ?? null,
+                  quantity: qty,
+                  maxStock: selectedVariant.stock,
+                });
+              }}
+              className="flex-1 rounded-full bg-[--color-charcoal] py-3.5 text-sm tracking-wide text-white transition hover:bg-[--color-espresso] disabled:opacity-40"
+            >
+              {inStock ? "Add to Bag" : "Out of Stock"}
+            </button>
+            <button
+              onClick={() => toggle(product.id)}
+              aria-label="Wishlist"
+              className="rounded-full border border-black/15 p-3.5"
+            >
+              <Heart className={cn("h-5 w-5", has ? "fill-[--color-gold] text-[--color-gold]" : "")} />
+            </button>
+          </div>
+
+          {product.fabric && (
+            <div className="mt-10 space-y-2 border-t border-black/10 pt-6 text-sm text-black/60">
+              <p><span className="text-black/40">Fabric:</span> {product.fabric}</p>
+              {product.care_instructions && (
+                <p><span className="text-black/40">Care:</span> {product.care_instructions}</p>
+              )}
+            </div>
+          )}
+        </motion.div>
+      </div>
+
+      {showSizeGuide && <SizeGuideModal onClose={() => setShowSizeGuide(false)} />}
+    </main>
+  );
+}
