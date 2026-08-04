@@ -26,8 +26,6 @@ function CustomRequestFormInner() {
   const [preferredFit, setPreferredFit] = useState("Regular");
   const [colorRequirements, setColorRequirements] = useState("");
   const [additionalRequirements, setAdditionalRequirements] = useState("");
-  const [deliveryDate, setDeliveryDate] = useState("");
-  const [budget, setBudget] = useState("");
   const [measurements, setMeasurements] = useState<Record<string, string>>({});
   const [images, setImages] = useState<{ url: string; type: "reference" | "sketch" | "inspiration" }[]>([]);
   const [uploading, setUploading] = useState(false);
@@ -89,8 +87,6 @@ function CustomRequestFormInner() {
           preferred_fit: preferredFit,
           color_requirements: colorRequirements,
           additional_requirements: additionalRequirements,
-          desired_delivery_date: deliveryDate || null,
-          budget: budget ? parseFloat(budget) : null,
         })
         .select()
         .single();
@@ -180,17 +176,6 @@ function CustomRequestFormInner() {
         onChange={(e) => setAdditionalRequirements(e.target.value)}
         className="w-full rounded-lg border border-black/15 px-4 py-3 text-sm"
       />
-
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div>
-          <label className="mb-1 block text-xs text-espresso/50">Desired delivery date (optional)</label>
-          <input type="date" value={deliveryDate} onChange={(e) => setDeliveryDate(e.target.value)} className="w-full rounded-lg border border-black/15 px-4 py-3 text-sm" />
-        </div>
-        <div>
-          <label className="mb-1 block text-xs text-espresso/50">Budget in ₹ (optional)</label>
-          <input type="number" placeholder="e.g. 3000" value={budget} onChange={(e) => setBudget(e.target.value)} className="w-full rounded-lg border border-black/15 px-4 py-3 text-sm" />
-        </div>
-      </div>
 
       <div className="border-t border-black/10 pt-6">
         <p className="mb-4 font-display text-lg">Measurements</p>
