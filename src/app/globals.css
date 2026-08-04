@@ -3,12 +3,14 @@
 @tailwind utilities;
 
 :root {
-  --color-ivory: #f7f4ef;
-  --color-charcoal: #161513;
-  --color-espresso: #2a2621;
-  --color-beige: #e8ddce;
-  --color-gold: #c6a15b;
-  --color-gold-light: #e4c98a;
+  --color-ivory: #f7f3ec;
+  --color-cream: #efe8db;
+  --color-charcoal: #1c1815;
+  --color-espresso: #2b2118;
+  --color-sage: #8f9b7d;
+  --color-dusty-rose: #c99a95;
+  --color-gold: #b08d4f;
+  --color-gold-light: #d9bc84;
 }
 
 html {
@@ -17,7 +19,7 @@ html {
 
 body {
   background: var(--color-ivory);
-  color: var(--color-charcoal);
+  color: var(--color-espresso);
   font-family: var(--font-inter), sans-serif;
   overflow-x: hidden;
 }
@@ -29,25 +31,25 @@ h1, h2, h3, h4, .font-display {
 
 ::selection {
   background: var(--color-gold);
-  color: #161513;
+  color: #ffffff;
 }
 
 .glass {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.18);
 }
 
 .glass-dark {
-  background: rgba(22, 21, 19, 0.55);
+  background: rgba(28, 24, 21, 0.55);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .text-gradient-gold {
-  background: linear-gradient(120deg, #c6a15b, #f1dca0, #c6a15b);
+  background: linear-gradient(120deg, #b08d4f, #e4c98a, #b08d4f);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -67,7 +69,7 @@ h1, h2, h3, h4, .font-display {
   100% { background-position: 200% 0; }
 }
 .animate-shimmer {
-  background: linear-gradient(90deg, transparent, rgba(198,161,91,0.35), transparent);
+  background: linear-gradient(90deg, transparent, rgba(176,141,79,0.3), transparent);
   background-size: 200% 100%;
   animation: shimmer 2.5s infinite;
 }

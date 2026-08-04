@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LogOut, Package, ClipboardList, Home } from "lucide-react";
+import { LogOut, Package, ClipboardList, Home, Layers, Shapes, Inbox, LayoutDashboard } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 
@@ -11,7 +11,11 @@ export default function AdminNav() {
   const supabase = createClient();
 
   const items = [
+    { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
+    { href: "/admin/categories", label: "Categories", icon: Shapes },
+    { href: "/admin/materials", label: "Materials", icon: Layers },
     { href: "/admin/products", label: "Products", icon: Package },
+    { href: "/admin/custom-requests", label: "Custom Requests", icon: Inbox },
     { href: "/admin/orders", label: "Orders", icon: ClipboardList },
   ];
 
@@ -23,16 +27,16 @@ export default function AdminNav() {
   return (
     <aside className="flex w-full shrink-0 flex-row items-center justify-between border-b border-black/10 bg-white px-6 py-4 md:w-64 md:flex-col md:items-stretch md:justify-start md:border-b-0 md:border-r md:px-6 md:py-8">
       <Link href="/admin/products" className="font-display text-lg tracking-wide">
-        Luna Admin
+        Knit &amp; Knot Admin
       </Link>
-      <nav className="flex gap-2 md:mt-10 md:flex-col md:gap-1">
+      <nav className="flex gap-2 overflow-x-auto md:mt-10 md:flex-col md:gap-1 md:overflow-visible">
         {items.map((i) => (
           <Link
             key={i.href}
             href={i.href}
             className={cn(
-              "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition",
-              pathname.startsWith(i.href) ? "bg-[--color-charcoal] text-white" : "text-black/70 hover:bg-black/5"
+              "flex items-center gap-3 whitespace-nowrap rounded-lg px-3 py-2 text-sm transition",
+              pathname.startsWith(i.href) ? "bg-espresso text-white" : "text-black/70 hover:bg-black/5"
             )}
           >
             <i.icon className="h-4 w-4" /> {i.label}

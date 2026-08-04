@@ -50,7 +50,7 @@ function ShopContent() {
   return (
     <main className="mx-auto max-w-7xl px-6 pb-24 pt-32 md:px-10">
       <div className="mb-10 text-center">
-        <span className="text-xs uppercase tracking-[0.35em] text-[--color-gold]">Shop</span>
+        <span className="text-xs uppercase tracking-[0.35em] text-gold">Shop</span>
         <h1 className="font-display mt-4 text-4xl md:text-5xl">The Full Collection</h1>
       </div>
 

@@ -10,6 +10,9 @@ type OrderItem = {
   color: string | null;
   quantity: number;
   unit_price: number;
+  item_type: string;
+  customization: { optionName: string; valueLabel: string; price: number }[] | null;
+  measurements: Record<string, string> | null;
 };
 
 type Order = {
@@ -82,11 +85,30 @@ export default function AdminOrdersPage() {
                   </select>
                 </div>
               </div>
-              <ul className="mt-4 space-y-1 border-t border-black/5 pt-3 text-sm text-black/70">
+              <ul className="mt-4 space-y-2 border-t border-black/5 pt-3 text-sm text-black/70">
                 {o.order_items?.map((item) => (
-                  <li key={item.id} className="flex justify-between">
-                    <span>{item.product_name} ({item.color}/{item.size}) x{item.quantity}</span>
-                    <span>{formatPrice(item.unit_price * item.quantity)}</span>
+                  <li key={item.id}>
+                    <div className="flex justify-between">
+                      <span>
+                        {item.product_name} ({item.color}/{item.size}) x{item.quantity}
+                        <span className="ml-2 rounded-full bg-black/5 px-2 py-0.5 text-[10px] uppercase tracking-wide text-black/50">
+                          {item.item_type === "customized" ? "Customized" : "Original"}
+                        </span>
+                      </span>
+                      <span>{formatPrice(item.unit_price * item.quantity)}</span>
+                    </div>
+                    {item.customization && item.customization.length > 0 && (
+                      <ul className="mt-1 pl-3 text-xs text-black/45">
+                        {item.customization.map((c, i) => (
+                          <li key={i}>{c.optionName}: {c.valueLabel}</li>
+                        ))}
+                      </ul>
+                    )}
+                    {item.measurements && Object.keys(item.measurements).length > 0 && (
+                      <p className="mt-1 pl-3 text-xs text-black/40">
+                        {Object.entries(item.measurements).map(([k, v]) => `${k}: ${v}"`).join("  ·  ")}
+                      </p>
+                    )}
                   </li>
                 ))}
               </ul>

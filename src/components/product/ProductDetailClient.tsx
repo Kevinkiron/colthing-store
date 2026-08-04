@@ -1,8 +1,9 @@
 "use client";
 import { useMemo, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { motion } from "framer-motion";
-import { Heart, Minus, Plus, Ruler } from "lucide-react";
+import { Heart, Minus, Plus, Ruler, Sparkles, Wand2 } from "lucide-react";
 import type { Product } from "@/lib/types";
 import { formatPrice, cn } from "@/lib/utils";
 import { useCartStore } from "@/store/cart-store";
@@ -37,7 +38,7 @@ export default function ProductDetailClient({ product }: { product: Product }) {
     <main className="mx-auto max-w-7xl px-6 pb-24 pt-32 md:px-10">
       <div className="grid gap-10 md:grid-cols-2 md:gap-16">
         <div>
-          <div className="relative aspect-[3/4] overflow-hidden rounded-2xl bg-[--color-beige]">
+          <div className="relative aspect-[3/4] overflow-hidden rounded-2xl bg-cream">
             {images[activeImage] && (
               <Image
                 src={images[activeImage].url}
@@ -56,7 +57,7 @@ export default function ProductDetailClient({ product }: { product: Product }) {
                   onClick={() => setActiveImage(i)}
                   className={cn(
                     "relative h-20 w-16 overflow-hidden rounded-lg border-2",
-                    activeImage === i ? "border-[--color-gold]" : "border-transparent"
+                    activeImage === i ? "border-gold" : "border-transparent"
                   )}
                 >
                   <Image src={img.url} alt={img.alt ?? product.name} fill className="object-cover" />
@@ -68,25 +69,34 @@ export default function ProductDetailClient({ product }: { product: Product }) {
 
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
           {product.categories && (
-            <p className="text-xs uppercase tracking-[0.3em] text-[--color-gold]">
-              {product.categories.name}
-            </p>
+            <p className="text-xs uppercase tracking-[0.3em] text-gold">{product.categories.name}</p>
           )}
           <h1 className="font-display mt-3 text-3xl md:text-4xl">{product.name}</h1>
+
+          {product.materials && (
+            <Link
+              href={`/materials/${product.materials.slug}`}
+              className="mt-3 inline-flex items-center gap-2 rounded-full bg-cream px-4 py-2 text-xs text-espresso/70 transition hover:bg-cream/70"
+            >
+              Made with <span className="font-medium text-espresso">{product.materials.name}</span>
+            </Link>
+          )}
+
           <div className="mt-4 flex items-center gap-3">
             <p className="text-xl">{formatPrice(price)}</p>
             {product.compare_at_price && (
-              <p className="text-sm text-black/40 line-through">
-                {formatPrice(product.compare_at_price)}
-              </p>
+              <p className="text-sm text-black/40 line-through">{formatPrice(product.compare_at_price)}</p>
             )}
           </div>
 
-          <p className="mt-6 max-w-md text-sm text-black/65">{product.description}</p>
+          <p className="mt-6 max-w-md text-sm text-espresso/65">{product.description}</p>
+          {product.design_details && (
+            <p className="mt-2 max-w-md text-sm text-espresso/50">{product.design_details}</p>
+          )}
 
           {colors.length > 0 && (
             <div className="mt-8">
-              <p className="mb-3 text-xs uppercase tracking-wide text-black/50">Colour — {color}</p>
+              <p className="mb-3 text-xs uppercase tracking-wide text-espresso/50">Colour — {color}</p>
               <div className="flex flex-wrap gap-2">
                 {colors.map((c) => {
                   const swatch = variants.find((v) => v.color === c)?.color_hex ?? "#ccc";
@@ -96,7 +106,7 @@ export default function ProductDetailClient({ product }: { product: Product }) {
                       onClick={() => setColor(c)}
                       className={cn(
                         "flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs transition",
-                        color === c ? "border-[--color-gold] bg-[--color-gold]/10" : "border-black/15"
+                        color === c ? "border-gold bg-gold/10" : "border-black/15"
                       )}
                     >
                       <span className="h-3.5 w-3.5 rounded-full border border-black/10" style={{ backgroundColor: swatch }} />
@@ -111,10 +121,10 @@ export default function ProductDetailClient({ product }: { product: Product }) {
           {sizes.length > 0 && (
             <div className="mt-8">
               <div className="mb-3 flex items-center justify-between">
-                <p className="text-xs uppercase tracking-wide text-black/50">Size — {size}</p>
+                <p className="text-xs uppercase tracking-wide text-espresso/50">Size — {size}</p>
                 <button
                   onClick={() => setShowSizeGuide(true)}
-                  className="flex items-center gap-1 text-xs text-black/50 underline underline-offset-2"
+                  className="flex items-center gap-1 text-xs text-espresso/50 underline underline-offset-2"
                 >
                   <Ruler className="h-3 w-3" /> Size Guide
                 </button>
@@ -129,9 +139,7 @@ export default function ProductDetailClient({ product }: { product: Product }) {
                       onClick={() => setSize(s)}
                       className={cn(
                         "h-10 w-10 rounded-full border text-sm transition",
-                        size === s
-                          ? "border-[--color-gold] bg-[--color-gold] text-white"
-                          : "border-black/20 hover:border-black/50",
+                        size === s ? "border-gold bg-gold text-white" : "border-black/20 hover:border-black/50",
                         stockForSize === 0 && "cursor-not-allowed opacity-30 line-through"
                       )}
                     >
@@ -153,43 +161,63 @@ export default function ProductDetailClient({ product }: { product: Product }) {
             </button>
           </div>
 
-          <div className="mt-8 flex gap-3">
-            <button
-              disabled={!inStock || !selectedVariant}
-              onClick={() => {
-                if (!selectedVariant) return;
-                addLine({
-                  productId: product.id,
-                  variantId: selectedVariant.id,
-                  slug: product.slug,
-                  name: product.name,
-                  size,
-                  color,
-                  price,
-                  image: images[0]?.url ?? null,
-                  quantity: qty,
-                  maxStock: selectedVariant.stock,
-                });
-              }}
-              className="flex-1 rounded-full bg-[--color-charcoal] py-3.5 text-sm tracking-wide text-white transition hover:bg-[--color-espresso] disabled:opacity-40"
+          <div className="mt-8 space-y-3">
+            <div className="flex gap-3">
+              <button
+                disabled={!inStock || !selectedVariant}
+                onClick={() => {
+                  if (!selectedVariant) return;
+                  addLine({
+                    itemType: "standard",
+                    productId: product.id,
+                    variantId: selectedVariant.id,
+                    slug: product.slug,
+                    name: product.name,
+                    size,
+                    color,
+                    basePrice: price,
+                    customizationPrice: 0,
+                    price,
+                    image: images[0]?.url ?? null,
+                    quantity: qty,
+                    maxStock: selectedVariant.stock,
+                  });
+                }}
+                className="flex-1 rounded-full bg-espresso py-3.5 text-sm tracking-wide text-white transition hover:bg-charcoal disabled:opacity-40"
+              >
+                {inStock ? "Buy As Shown" : "Out of Stock"}
+              </button>
+              <button
+                onClick={() => toggle(product.id)}
+                aria-label="Wishlist"
+                className="rounded-full border border-black/15 p-3.5"
+              >
+                <Heart className={cn("h-5 w-5", has ? "fill-gold text-gold" : "")} />
+              </button>
+            </div>
+
+            {product.customization_enabled && (
+              <Link
+                href={`/customize/${product.slug}`}
+                className="flex items-center justify-center gap-2 rounded-full border border-gold px-6 py-3.5 text-sm tracking-wide text-gold transition hover:bg-gold hover:text-white"
+              >
+                <Wand2 className="h-4 w-4" /> Customize This Design
+              </Link>
+            )}
+
+            <Link
+              href={`/custom-request?${product.materials ? `material=${product.materials.slug}&` : ""}product=${product.slug}`}
+              className="flex items-center justify-center gap-2 rounded-full border border-black/15 px-6 py-3.5 text-sm tracking-wide text-espresso/80 transition hover:border-espresso"
             >
-              {inStock ? "Add to Bag" : "Out of Stock"}
-            </button>
-            <button
-              onClick={() => toggle(product.id)}
-              aria-label="Wishlist"
-              className="rounded-full border border-black/15 p-3.5"
-            >
-              <Heart className={cn("h-5 w-5", has ? "fill-[--color-gold] text-[--color-gold]" : "")} />
-            </button>
+              <Sparkles className="h-4 w-4" /> Create Something Different
+            </Link>
           </div>
 
-          {product.fabric && (
-            <div className="mt-10 space-y-2 border-t border-black/10 pt-6 text-sm text-black/60">
-              <p><span className="text-black/40">Fabric:</span> {product.fabric}</p>
-              {product.care_instructions && (
-                <p><span className="text-black/40">Care:</span> {product.care_instructions}</p>
-              )}
+          {(product.fabric || product.production_time) && (
+            <div className="mt-10 space-y-2 border-t border-black/10 pt-6 text-sm text-espresso/60">
+              {product.fabric && <p><span className="text-espresso/40">Fabric:</span> {product.fabric}</p>}
+              {product.care_instructions && <p><span className="text-espresso/40">Care:</span> {product.care_instructions}</p>}
+              {product.production_time && <p><span className="text-espresso/40">Production time:</span> {product.production_time}</p>}
             </div>
           )}
         </motion.div>

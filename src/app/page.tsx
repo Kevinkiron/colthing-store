@@ -1,29 +1,34 @@
 import { publicSupabase } from "@/lib/supabase/public";
-import { getFeaturedProducts } from "@/lib/queries";
+import { getFeaturedMaterials, getFeaturedProducts, getOneMaterialManyPossibilities } from "@/lib/queries";
 import Hero from "@/components/home/Hero";
 import BrandStory from "@/components/home/BrandStory";
-import CollectionShowcase from "@/components/home/CollectionShowcase";
-import WomensEditorial from "@/components/home/WomensEditorial";
+import FeaturedMaterials from "@/components/home/FeaturedMaterials";
+import OneMaterialManyPossibilities from "@/components/home/OneMaterialManyPossibilities";
+import ReadyToWear from "@/components/home/ReadyToWear";
 import FeaturedProduct3D from "@/components/home/FeaturedProduct3D";
+import MakeItYours from "@/components/home/MakeItYours";
+import HaveYourOwnIdea from "@/components/home/HaveYourOwnIdea";
 import Testimonials from "@/components/home/Testimonials";
 
 export const revalidate = 60;
 
 export default async function Home() {
-  let featured: Awaited<ReturnType<typeof getFeaturedProducts>> = [];
-  try {
-    featured = await getFeaturedProducts(publicSupabase, 8);
-  } catch {
-    featured = [];
-  }
+  const [materials, products, combo] = await Promise.all([
+    getFeaturedMaterials(publicSupabase, 6).catch(() => []),
+    getFeaturedProducts(publicSupabase, 8).catch(() => []),
+    getOneMaterialManyPossibilities(publicSupabase).catch(() => null),
+  ]);
 
   return (
     <main>
       <Hero />
       <BrandStory />
-      <CollectionShowcase products={featured} />
-      <WomensEditorial />
+      <FeaturedMaterials materials={materials} />
+      {combo && <OneMaterialManyPossibilities material={combo.material} products={combo.products} />}
+      <ReadyToWear products={products} />
       <FeaturedProduct3D />
+      <MakeItYours />
+      <HaveYourOwnIdea />
       <Testimonials />
     </main>
   );

@@ -16,7 +16,7 @@ export default function ProductsTable() {
     setLoading(true);
     const { data } = await supabase
       .from("products")
-      .select("*, categories(*), product_images(*), product_variants(*)")
+      .select("*, categories(*), materials(name), product_images(*), product_variants(*)")
       .order("created_at", { ascending: false });
     setProducts((data as Product[]) ?? []);
     setLoading(false);
@@ -36,7 +36,7 @@ export default function ProductsTable() {
     <div>
       <div className="mb-6 flex items-center justify-between">
         <h1 className="font-display text-3xl">Products</h1>
-        <Link href="/admin/products/new" className="flex items-center gap-2 rounded-full bg-[--color-charcoal] px-5 py-2.5 text-sm text-white">
+        <Link href="/admin/products/new" className="flex items-center gap-2 rounded-full bg-espresso px-5 py-2.5 text-sm text-white">
           <Plus className="h-4 w-4" /> Add Product
         </Link>
       </div>
@@ -52,6 +52,7 @@ export default function ProductsTable() {
               <tr className="border-b border-black/10 text-xs uppercase text-black/40">
                 <th className="p-4">Product</th>
                 <th className="p-4">Category</th>
+                <th className="p-4">Material</th>
                 <th className="p-4">Price</th>
                 <th className="p-4">Stock</th>
                 <th className="p-4">Status</th>
@@ -65,12 +66,13 @@ export default function ProductsTable() {
                 return (
                   <tr key={p.id} className="border-b border-black/5">
                     <td className="flex items-center gap-3 p-4">
-                      <div className="relative h-12 w-10 overflow-hidden rounded bg-[--color-beige]">
+                      <div className="relative h-12 w-10 overflow-hidden rounded bg-cream">
                         {img && <Image src={img} alt={p.name} fill className="object-cover" />}
                       </div>
                       {p.name}
                     </td>
                     <td className="p-4 text-black/60">{p.categories?.name ?? "—"}</td>
+                    <td className="p-4 text-black/60">{p.materials?.name ?? "—"}</td>
                     <td className="p-4">{formatPrice(p.base_price)}</td>
                     <td className="p-4">{stock}</td>
                     <td className="p-4">

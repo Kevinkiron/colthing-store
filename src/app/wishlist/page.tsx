@@ -30,7 +30,7 @@ export default function WishlistPage() {
       {products.length === 0 ? (
         <div className="py-20 text-center">
           <p className="text-black/60">Nothing saved yet.</p>
-          <Link href="/shop" className="mt-6 inline-block rounded-full bg-[--color-charcoal] px-8 py-3 text-sm text-white">
+          <Link href="/shop" className="mt-6 inline-block rounded-full bg-espresso px-8 py-3 text-sm text-white">
             Browse Products
           </Link>
         </div>

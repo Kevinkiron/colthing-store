@@ -20,6 +20,6 @@ export const useWishlistStore = create<WishlistState>()(
         })),
       has: (id) => get().productIds.includes(id),
     }),
-    { name: "luna-atelier-wishlist" }
+    { name: "knit-and-knot-wishlist" }
   )
 );

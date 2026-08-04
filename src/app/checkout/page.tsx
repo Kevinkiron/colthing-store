@@ -1,12 +1,13 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { publicSupabase } from "@/lib/supabase/public";
+import { createClient } from "@/lib/supabase/client";
 import { useCartStore } from "@/store/cart-store";
 import { formatPrice } from "@/lib/utils";
 
 export default function CheckoutPage() {
   const router = useRouter();
+  const supabase = createClient();
   const lines = useCartStore((s) => s.lines);
   const subtotal = useCartStore((s) => s.subtotal());
   const clear = useCartStore((s) => s.clear);
@@ -36,9 +37,12 @@ export default function CheckoutPage() {
     setSubmitting(true);
     setError(null);
     try {
-      const { data: order, error: orderErr } = await publicSupabase
+      const { data: sessionData } = await supabase.auth.getSession();
+
+      const { data: order, error: orderErr } = await supabase
         .from("orders")
         .insert({
+          user_id: sessionData.session?.user.id ?? null,
           customer_name: form.name,
           customer_email: form.email,
           customer_phone: form.phone,
@@ -64,8 +68,12 @@ export default function CheckoutPage() {
         color: l.color,
         quantity: l.quantity,
         unit_price: l.price,
+        item_type: l.itemType,
+        customization: l.customization ?? null,
+        measurements: l.measurements ?? null,
+        customization_price: l.customizationPrice,
       }));
-      const { error: itemsErr } = await publicSupabase.from("order_items").insert(items);
+      const { error: itemsErr } = await supabase.from("order_items").insert(items);
       if (itemsErr) throw itemsErr;
 
       clear();
@@ -109,17 +117,17 @@ export default function CheckoutPage() {
               className="rounded-lg border border-black/15 px-4 py-3 text-sm" />
           </div>
 
-          <p className="!mt-6 text-xs text-black/45">
+          <p className="!mt-6 text-xs text-espresso/45">
             This is a demo checkout — no payment is collected here. Your order
-            will be saved and the store owner will contact you to confirm
-            payment and delivery.
+            will be saved and Knit &amp; Knot will contact you to confirm
+            payment, measurements, and delivery.
           </p>
 
           {error && <p className="text-sm text-red-600">{error}</p>}
 
           <button
             disabled={submitting}
-            className="w-full rounded-full bg-[--color-charcoal] py-3.5 text-sm text-white hover:bg-[--color-espresso] disabled:opacity-50"
+            className="w-full rounded-full bg-espresso py-3.5 text-sm text-white hover:bg-charcoal disabled:opacity-50"
           >
             {submitting ? "Placing order..." : `Place Order — ${formatPrice(subtotal)}`}
           </button>
@@ -127,11 +135,23 @@ export default function CheckoutPage() {
 
         <div className="h-fit rounded-2xl border border-black/10 p-6">
           <p className="mb-4 font-display">Order Summary</p>
-          <ul className="space-y-3 text-sm">
+          <ul className="space-y-4 text-sm">
             {lines.map((l) => (
-              <li key={l.variantId} className="flex justify-between text-black/70">
-                <span>{l.name} ({l.color}/{l.size}) x{l.quantity}</span>
-                <span>{formatPrice(l.price * l.quantity)}</span>
+              <li key={l.cartLineId} className="text-espresso/70">
+                <div className="flex justify-between">
+                  <span>{l.name} x{l.quantity}</span>
+                  <span>{formatPrice(l.price * l.quantity)}</span>
+                </div>
+                <span className="text-xs text-espresso/40">
+                  {l.itemType === "customized" ? "Customized Design" : "Original Design"} — {l.color} / {l.size}
+                </span>
+                {l.customization && l.customization.length > 0 && (
+                  <ul className="mt-1 pl-3 text-xs text-espresso/40">
+                    {l.customization.map((c, i) => (
+                      <li key={i}>{c.optionName}: {c.valueLabel}{c.price > 0 ? ` (+${formatPrice(c.price)})` : ""}</li>
+                    ))}
+                  </ul>
+                )}
               </li>
             ))}
           </ul>

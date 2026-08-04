@@ -18,9 +18,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Luna Atelier — Everyday Elegance, Honestly Priced",
+  title: "Knit & Knot — Choose the material. Make it yours.",
   description:
-    "Premium-look, affordable daily wear for women. Dresses, tops, co-ords and loungewear designed for real life.",
+    "Discover beautiful materials, explore designs created from them, and create something uniquely yours. A premium bespoke fashion atelier.",
 };
 
 export default function RootLayout({

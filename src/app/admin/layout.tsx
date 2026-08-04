@@ -15,12 +15,21 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       setChecked(true);
       return;
     }
-    supabase.auth.getSession().then(({ data }) => {
+    supabase.auth.getSession().then(async ({ data }) => {
       if (!data.session) {
         router.replace("/admin/login");
-      } else {
-        setChecked(true);
+        return;
       }
+      const { data: profile } = await supabase
+        .from("admin_profiles")
+        .select("id")
+        .eq("id", data.session.user.id)
+        .maybeSingle();
+      if (!profile) {
+        router.replace("/admin/login");
+        return;
+      }
+      setChecked(true);
     });
   }, [pathname, router, supabase]);
 
@@ -30,7 +39,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   return (
     <div className="flex min-h-screen flex-col md:flex-row">
       <AdminNav />
-      <div className="flex-1 bg-[--color-ivory] px-6 py-8 md:px-10">{children}</div>
+      <div className="flex-1 bg-ivory px-6 py-8 md:px-10">{children}</div>
     </div>
   );
 }

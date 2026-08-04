@@ -23,8 +23,8 @@ export default function Filters({
           className={cn(
             "whitespace-nowrap rounded-full border px-4 py-2 text-xs uppercase tracking-wide transition",
             active === null
-              ? "border-[--color-charcoal] bg-[--color-charcoal] text-white"
-              : "border-black/15 hover:border-[--color-gold]"
+              ? "border-espresso bg-espresso text-white"
+              : "border-black/15 hover:border-gold"
           )}
         >
           All
@@ -36,8 +36,8 @@ export default function Filters({
             className={cn(
               "whitespace-nowrap rounded-full border px-4 py-2 text-xs uppercase tracking-wide transition",
               active === c.slug
-                ? "border-[--color-charcoal] bg-[--color-charcoal] text-white"
-                : "border-black/15 hover:border-[--color-gold]"
+                ? "border-espresso bg-espresso text-white"
+                : "border-black/15 hover:border-gold"
             )}
           >
             {c.name}

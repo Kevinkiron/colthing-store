@@ -29,7 +29,7 @@ export default function ProductCard({ product, index = 0 }: { product: Product; 
       className="group relative"
     >
       <Link href={`/product/${product.slug}`}>
-        <div className="relative aspect-[3/4] overflow-hidden rounded-xl bg-[--color-beige]">
+        <div className="relative aspect-[3/4] overflow-hidden rounded-xl bg-cream">
           {primary && (
             <Image
               src={primary.url}
@@ -59,7 +59,7 @@ export default function ProductCard({ product, index = 0 }: { product: Product; 
             </span>
           )}
           {product.compare_at_price && (
-            <span className="absolute left-3 top-3 mt-8 rounded-full bg-[--color-gold] px-3 py-1 text-[10px] uppercase tracking-wide text-white" style={{ top: product.is_new ? "2.75rem" : "0.75rem" }}>
+            <span className="absolute left-3 top-3 mt-8 rounded-full bg-gold px-3 py-1 text-[10px] uppercase tracking-wide text-white" style={{ top: product.is_new ? "2.75rem" : "0.75rem" }}>
               Sale
             </span>
           )}
@@ -77,7 +77,7 @@ export default function ProductCard({ product, index = 0 }: { product: Product; 
             aria-label="Toggle wishlist"
             className="absolute right-3 top-3 rounded-full bg-white/85 p-2 opacity-0 backdrop-blur transition group-hover:opacity-100"
           >
-            <Heart className={cn("h-4 w-4", has ? "fill-[--color-gold] text-[--color-gold]" : "text-[--color-charcoal]")} />
+            <Heart className={cn("h-4 w-4", has ? "fill-gold text-gold" : "text-espresso")} />
           </button>
 
           <div className="absolute inset-x-0 bottom-0 translate-y-full glass p-3 transition-transform duration-500 group-hover:translate-y-0">

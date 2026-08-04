@@ -1,42 +1,42 @@
 "use client";
 import { motion } from "framer-motion";
-import { Truck, PackageCheck, Sparkles, Leaf } from "lucide-react";
+import { Ruler, PackageCheck, Sparkles, Leaf } from "lucide-react";
 
 const testimonials = [
   {
     name: "Ananya R.",
     quote:
-      "The fabric feels genuinely premium — I get compliments every time I wear the co-ord set, and it cost less than a dinner out.",
+      "I picked the linen, tweaked the sleeve and collar, and got a shirt that fits better than anything off a rack. The whole process felt like working with a real tailor.",
   },
   {
     name: "Priya S.",
     quote:
-      "Finally a brand that fits real bodies. The sizing chart was spot on and the midi dress fits like it was tailored.",
+      "I described a dress I couldn't find anywhere — oversized, a specific neckline — and Knit & Knot quoted it, made it, and it arrived exactly as I imagined.",
   },
   {
     name: "Meera K.",
     quote:
-      "Fast shipping, beautiful packaging, and the quality rivals brands twice the price. I've reordered three times now.",
+      "The material pages are beautiful, and knowing exactly what fabric my garment is made from before I even choose a design made the whole decision easy.",
   },
 ];
 
 const values = [
-  { icon: Sparkles, label: "Premium Fabrics", desc: "Curated mill-direct materials" },
-  { icon: Truck, label: "Pan-India Shipping", desc: "3–6 day delivery, tracked" },
-  { icon: PackageCheck, label: "Easy 7-Day Returns", desc: "No questions asked" },
-  { icon: Leaf, label: "Responsible Production", desc: "Low-waste cutting, small batches" },
+  { icon: Sparkles, label: "Considered Materials", desc: "Every fabric sourced and lived with first" },
+  { icon: Ruler, label: "Made to Measure", desc: "Every order can be personalised to you" },
+  { icon: PackageCheck, label: "Crafted, Not Mass-Produced", desc: "Small-batch, made-to-order production" },
+  { icon: Leaf, label: "Responsible by Design", desc: "Low-waste cutting, considered sourcing" },
 ];
 
 const stats = [
-  { number: "40,000+", label: "Customers styled" },
-  { number: "120+", label: "Everyday styles" },
-  { number: "4.8 / 5", label: "Average rating" },
-  { number: "6", label: "Cities with studios" },
+  { number: "20+", label: "Curated materials" },
+  { number: "500+", label: "Bespoke garments made" },
+  { number: "4.9 / 5", label: "Average rating" },
+  { number: "7", label: "Working days, on average" },
 ];
 
 export default function Testimonials() {
   return (
-    <section className="bg-[--color-ivory] py-24 md:py-32">
+    <section className="bg-ivory py-24 md:py-32">
       <div className="mx-auto max-w-7xl px-6 md:px-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -45,10 +45,8 @@ export default function Testimonials() {
           transition={{ duration: 0.7 }}
           className="mb-16 text-center"
         >
-          <span className="text-xs uppercase tracking-[0.35em] text-[--color-gold]">
-            Loved by Thousands
-          </span>
-          <h2 className="font-display mt-4 text-4xl md:text-5xl">What Our Customers Say</h2>
+          <span className="text-xs uppercase tracking-[0.35em] text-gold">Loved by Our Customers</span>
+          <h2 className="font-display mt-4 text-4xl md:text-5xl">What They&apos;re Wearing</h2>
         </motion.div>
 
         <div className="grid gap-6 md:grid-cols-3">
@@ -61,8 +59,8 @@ export default function Testimonials() {
               transition={{ duration: 0.6, delay: i * 0.1 }}
               className="rounded-2xl border border-black/5 bg-white p-8 shadow-sm"
             >
-              <p className="text-[--color-gold]">★★★★★</p>
-              <p className="mt-4 text-sm text-[--color-charcoal]/75">&ldquo;{t.quote}&rdquo;</p>
+              <p className="text-gold">★★★★★</p>
+              <p className="mt-4 text-sm text-espresso/75">&ldquo;{t.quote}&rdquo;</p>
               <p className="mt-5 font-display text-sm">{t.name}</p>
             </motion.div>
           ))}
@@ -78,9 +76,9 @@ export default function Testimonials() {
               transition={{ duration: 0.6, delay: i * 0.1 }}
               className="flex flex-col items-center text-center"
             >
-              <v.icon className="h-7 w-7 text-[--color-gold]" />
+              <v.icon className="h-7 w-7 text-gold" />
               <p className="font-display mt-4 text-base">{v.label}</p>
-              <p className="mt-1 text-xs text-[--color-charcoal]/55">{v.desc}</p>
+              <p className="mt-1 text-xs text-espresso/55">{v.desc}</p>
             </motion.div>
           ))}
         </div>
@@ -95,10 +93,8 @@ export default function Testimonials() {
               transition={{ duration: 0.6, delay: i * 0.1 }}
               className="text-center"
             >
-              <p className="font-display text-3xl text-[--color-gold] md:text-4xl">{s.number}</p>
-              <p className="mt-1 text-xs uppercase tracking-wide text-[--color-charcoal]/55">
-                {s.label}
-              </p>
+              <p className="font-display text-3xl text-gold md:text-4xl">{s.number}</p>
+              <p className="mt-1 text-xs uppercase tracking-wide text-espresso/55">{s.label}</p>
             </motion.div>
           ))}
         </div>
