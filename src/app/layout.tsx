@@ -5,6 +5,7 @@ import SmoothScroll from "@/components/layout/SmoothScroll";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import CartDrawer from "@/components/layout/CartDrawer";
+import FloatingContact from "@/components/layout/FloatingContact";
 
 const playfair = Playfair_Display({
   variable: "--font-playfair",
@@ -34,6 +35,7 @@ export default function RootLayout({
           {children}
           <Footer />
           <CartDrawer />
+          <FloatingContact />
         </SmoothScroll>
       </body>
     </html>

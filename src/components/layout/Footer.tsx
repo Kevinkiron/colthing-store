@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { Instagram, Facebook, Youtube, MapPin } from "lucide-react";
+import WhatsAppIcon from "./WhatsAppIcon";
 
 export default function Footer() {
   const [email, setEmail] = useState("");
@@ -22,7 +23,10 @@ export default function Footer() {
               own.
             </p>
             <div className="mt-6 flex gap-4">
-              <a href="#" aria-label="Instagram" className="rounded-full border border-white/15 p-2 transition hover:border-gold hover:text-gold">
+              <a href="https://wa.me/919562572931" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp" className="rounded-full border border-white/15 p-2 transition hover:border-gold hover:text-gold">
+                <WhatsAppIcon className="h-4 w-4" />
+              </a>
+              <a href="https://www.instagram.com/knit__and_knot/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="rounded-full border border-white/15 p-2 transition hover:border-gold hover:text-gold">
                 <Instagram className="h-4 w-4" />
               </a>
               <a href="#" aria-label="Facebook" className="rounded-full border border-white/15 p-2 transition hover:border-gold hover:text-gold">
@@ -50,7 +54,7 @@ export default function Footer() {
               <li>Size &amp; Measurement Guide</li>
               <li>Track Order / Request</li>
               <li>Shipping &amp; Returns</li>
-              <li>Contact Us</li>
+              <li><Link href="/contact">Contact Us</Link></li>
             </ul>
             <p className="mt-6 flex items-center gap-2 text-sm text-ivory/60">
               <MapPin className="h-4 w-4 text-gold" /> Shipping pan-India

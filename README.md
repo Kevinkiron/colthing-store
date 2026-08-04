@@ -9,6 +9,17 @@ Fiber. Backed by Supabase (Postgres + Auth + Storage).
 it as shown, customize it, or submit a fully bespoke request using the same
 material.
 
+## Contact
+
+A `/contact` page is live with a WhatsApp button (wa.me/919562572931),
+an Instagram link (@knit__and_knot), and a short form that saves to a
+`contact_messages` table in Supabase (view submissions in the Supabase
+dashboard's Table Editor for now — no admin UI for it yet). Floating
+WhatsApp + Instagram buttons sit in the bottom-right corner on every page
+(added once in the root layout), and "Contact Us" in the footer links to
+this page site-wide. The custom-request page also nudges people toward
+WhatsApp/Instagram as an alternative to the form.
+
 ## What changed in this rework
 
 This project began as a simpler "Luna Atelier" affordable-daily-wear store.
