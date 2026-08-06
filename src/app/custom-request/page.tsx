@@ -5,12 +5,13 @@ export default function CustomRequestPage() {
   return (
     <main className="mx-auto max-w-3xl px-6 pb-24 pt-32 md:px-10">
       <div className="mb-8 text-center">
-        <span className="text-xs uppercase tracking-[0.35em] text-gold">Create Something Custom</span>
-        <h1 className="font-display mt-4 text-4xl md:text-5xl">Have Your Own Idea?</h1>
+        <span className="text-xs uppercase tracking-[0.35em] text-gold">Create Custom</span>
+        <h1 className="font-display mt-4 text-4xl md:text-5xl">Create Your Own Style</h1>
+        <p className="mx-auto mt-2 text-espresso/70">Have a design in mind?</p>
         <p className="mx-auto mt-4 max-w-lg text-espresso/60">
-          Tell us what you imagine and we&apos;ll create it using the
-          material you love. Our atelier will review your request and send
-          you a quotation.
+          Share your reference and measurements, then select your preferred
+          material from our in-store collection. We&apos;ll customise the
+          design and create an outfit tailored to your style and fit.
         </p>
       </div>
 

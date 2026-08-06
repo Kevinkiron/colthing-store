@@ -5,7 +5,7 @@ import Link from "next/link";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 
-const headline = ["Choose", "the", "material.", "Make", "it", "yours."];
+const headline = ["Pick", "Your", "Fabric.", "Personalise", "Your", "Style."];
 
 export default function Hero() {
   const ref = useRef<HTMLDivElement>(null);
@@ -57,8 +57,8 @@ export default function Hero() {
           transition={{ delay: 1.3, duration: 0.8 }}
           className="mt-6 max-w-md text-sm text-white/75 md:text-base"
         >
-          Discover beautiful materials, explore designs created from them,
-          and create something uniquely yours.
+          Choose your favourite fabric, customise your design, and let our
+          expert tailor bring your vision to life with a perfect fit.
         </motion.p>
 
         <motion.div

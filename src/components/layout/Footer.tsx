@@ -18,9 +18,9 @@ export default function Footer() {
           <div>
             <p className="font-display text-2xl">Knit &amp; Knot</p>
             <p className="mt-4 max-w-xs text-sm text-ivory/60">
-              A premium bespoke fashion atelier. Choose a material, wear it
-              as designed, make it yours, or create something entirely your
-              own.
+              Knit &amp; Knot, based in Trivandrum, creates custom-stitched
+              outfits and everyday wear for college students and working
+              women.
             </p>
             <div className="mt-6 flex gap-4">
               <a href="https://wa.me/919562572931" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp" className="rounded-full border border-white/15 p-2 transition hover:border-gold hover:text-gold">

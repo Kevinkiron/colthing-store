@@ -1,6 +1,6 @@
 "use client";
 import { motion } from "framer-motion";
-import { Ruler, PackageCheck, Sparkles, Leaf } from "lucide-react";
+import { Ruler, Truck, Sparkles, ShieldCheck } from "lucide-react";
 
 const testimonials = [
   {
@@ -21,17 +21,17 @@ const testimonials = [
 ];
 
 const values = [
-  { icon: Sparkles, label: "Considered Materials", desc: "Every fabric sourced and lived with first" },
-  { icon: Ruler, label: "Made to Measure", desc: "Every order can be personalised to you" },
-  { icon: PackageCheck, label: "Crafted, Not Mass-Produced", desc: "Small-batch, made-to-order production" },
-  { icon: Leaf, label: "Responsible by Design", desc: "Low-waste cutting, considered sourcing" },
+  { icon: Truck, label: "Timely Delivery", desc: "Your order, ready on time." },
+  { icon: Sparkles, label: "Expert Craftsmanship", desc: "Every stitch is made with care." },
+  { icon: Ruler, label: "Perfect Fit", desc: "Tailored to suit your measurements." },
+  { icon: ShieldCheck, label: "100% Quality", desc: "Quality checked for every detail." },
 ];
 
 const stats = [
-  { number: "20+", label: "Curated materials" },
-  { number: "500+", label: "Bespoke garments made" },
-  { number: "4.9 / 5", label: "Average rating" },
-  { number: "7", label: "Working days, on average" },
+  { number: "10+", label: "Years", desc: "Experience in every stitch" },
+  { number: "150+", label: "Happy Customers", desc: "Trusted for quality and care" },
+  { number: "100%", label: "Customised", desc: "Made around your preferences" },
+  { number: "1", label: "Perfect Fit", desc: "Tailored especially for you" },
 ];
 
 export default function Testimonials() {
@@ -45,8 +45,8 @@ export default function Testimonials() {
           transition={{ duration: 0.7 }}
           className="mb-16 text-center"
         >
-          <span className="text-xs uppercase tracking-[0.35em] text-gold">Loved by Our Customers</span>
-          <h2 className="font-display mt-4 text-4xl md:text-5xl">What They&apos;re Wearing</h2>
+          <span className="text-xs uppercase tracking-[0.35em] text-gold">Loved by our customers</span>
+          <h2 className="font-display mt-4 text-4xl md:text-5xl">Customer Love &amp; Feedback</h2>
         </motion.div>
 
         <div className="grid gap-6 md:grid-cols-3">
@@ -93,8 +93,8 @@ export default function Testimonials() {
               transition={{ duration: 0.6, delay: i * 0.1 }}
               className="text-center"
             >
-              <p className="font-display text-3xl text-gold md:text-4xl">{s.number}</p>
-              <p className="mt-1 text-xs uppercase tracking-wide text-espresso/55">{s.label}</p>
+              <p className="font-display text-3xl text-gold md:text-4xl">{s.number} <span className="text-xl md:text-2xl">{s.label}</span></p>
+              <p className="mt-1 text-xs text-espresso/55">{s.desc}</p>
             </motion.div>
           ))}
         </div>

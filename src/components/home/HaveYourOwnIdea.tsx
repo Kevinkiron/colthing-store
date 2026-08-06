@@ -12,15 +12,15 @@ export default function HaveYourOwnIdea() {
           viewport={{ once: true, amount: 0.5 }}
           transition={{ duration: 0.8 }}
         >
-          <span className="text-xs uppercase tracking-[0.35em] text-gold">Have Your Own Idea?</span>
+          <span className="text-xs uppercase tracking-[0.35em] text-gold">Have your own idea</span>
           <h2 className="font-display mt-4 text-4xl md:text-5xl">
-            Have something completely different in mind?
+            Have a Style You&apos;ve Been Waiting to Wear?
           </h2>
           <p className="mt-5 text-espresso/70">
-            Tell us what you imagine and we&apos;ll create it using the
-            material you love — describe the silhouette, share reference
-            images, share your measurements, and our atelier will quote and
-            craft it for you.
+            Have a design in mind? Simply share your reference images,
+            measurements, and preferred details with us. Then, we carefully
+            customise the style, fit, and finishing touches to match your
+            requirements.
           </p>
           <Link
             href="/custom-request"

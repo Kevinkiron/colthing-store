@@ -10,11 +10,12 @@ export default async function MaterialsPage() {
   return (
     <main className="mx-auto max-w-7xl px-6 pb-24 pt-32 md:px-10">
       <div className="mb-14 text-center">
-        <span className="text-xs uppercase tracking-[0.35em] text-gold">Materials</span>
-        <h1 className="font-display mt-4 text-4xl md:text-5xl">Materials That Inspire</h1>
+        <span className="text-xs uppercase tracking-[0.35em] text-gold">Material</span>
+        <h1 className="font-display mt-4 text-4xl md:text-5xl">Everyday Fabrics, Effortless Style</h1>
         <p className="mx-auto mt-4 max-w-lg text-espresso/60">
-          Every Knit &amp; Knot design begins here. Explore a material, then
-          see what our atelier has designed with it.
+          Thoughtfully chosen fabrics, quality materials, and stylish
+          patterns come together to create comfortable everyday wear
+          designed for work, college, and every moment in between.
         </p>
       </div>
 

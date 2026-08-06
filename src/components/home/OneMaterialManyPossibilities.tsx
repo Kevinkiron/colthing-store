@@ -23,7 +23,7 @@ export default function OneMaterialManyPossibilities({
           transition={{ duration: 0.7 }}
           className="mb-14 text-center"
         >
-          <span className="text-xs uppercase tracking-[0.35em] text-gold">One Material. Many Possibilities.</span>
+          <span className="text-xs uppercase tracking-[0.35em] text-gold">One Material, Many Possibilities</span>
           <h2 className="font-display mt-4 text-4xl md:text-5xl">{material.name}</h2>
         </motion.div>
 

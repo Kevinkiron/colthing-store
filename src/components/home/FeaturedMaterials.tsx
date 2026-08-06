@@ -17,9 +17,9 @@ export default function FeaturedMaterials({ materials }: { materials: Material[]
           transition={{ duration: 0.7 }}
           className="mb-14 flex flex-col items-center text-center"
         >
-          <span className="text-xs uppercase tracking-[0.35em] text-gold">Materials That Inspire</span>
+          <span className="text-xs uppercase tracking-[0.35em] text-gold">Materials that inspire</span>
           <h2 className="font-display mt-4 max-w-xl text-4xl md:text-5xl">
-            Every design begins with a material we love.
+            Thoughtfully Selected Materials for Flawless Designs.
           </h2>
         </motion.div>
 

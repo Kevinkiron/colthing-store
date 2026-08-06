@@ -13,20 +13,21 @@ export default function MakeItYours() {
           viewport={{ once: true, amount: 0.5 }}
           transition={{ duration: 0.8 }}
         >
-          <span className="text-xs uppercase tracking-[0.35em] text-gold-light">Make It Yours</span>
+          <span className="text-xs uppercase tracking-[0.35em] text-gold-light">Make it yours</span>
           <h2 className="font-display mt-4 text-4xl md:text-5xl">
-            Love a design? Adjust it until it&apos;s truly yours.
+            Love a design? Make it your own ✨
           </h2>
           <p className="mt-5 max-w-md text-white/65">
-            Change the fit, the sleeve, the collar, the length. Add
-            embroidery, or leave it minimal. Every ready-to-wear design can
-            be personalised to your measurements before it&apos;s made.
+            Choose from our pre-designed styles and customise the details to
+            suit your preference. Add buttons, lace work, borders, tassels,
+            or other finishing touches. Each piece can be adjusted to your
+            measurements and personal style.
           </p>
           <Link
             href="/shop"
             className="mt-8 inline-block rounded-full bg-white px-8 py-3 text-sm tracking-wide text-charcoal transition hover:bg-gold-light"
           >
-            Customize a Design
+            Customize a design
           </Link>
         </motion.div>
 

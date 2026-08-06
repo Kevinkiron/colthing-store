@@ -28,30 +28,38 @@ export default function BrandStory() {
           transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.15 }}
           className="order-1 md:order-2"
         >
-          <span className="text-xs uppercase tracking-[0.35em] text-gold">Our Craft</span>
+          <span className="text-xs uppercase tracking-[0.35em] text-gold">About Knit &amp; Knot</span>
           <h2 className="font-display mt-4 text-4xl leading-tight md:text-5xl">
-            We begin with the material —
-            <br /> everything else follows.
+            Your Destination for Custom Tailoring in Trivandrum
           </h2>
           <p className="mt-6 max-w-md text-espresso/70">
-            Knit &amp; Knot is built around a simple idea: choose a material
-            you love, and let it become anything. Every piece starts life as
-            a fabric we&apos;ve sourced and lived with, before our atelier
-            shapes it into a design — one you can wear as shown, personalise,
-            or reimagine entirely as your own.
+            Knit &amp; Knot is a custom tailoring centre in Trivandrum,
+            creating personalised outfits for working professionals and
+            college students. Choose from our premium materials and
+            pre-designed styles, or share your own ideas to customise an
+            outfit that perfectly matches your needs.
           </p>
-          <div className="mt-8 grid grid-cols-3 gap-6 border-t border-black/10 pt-8">
+          <p className="mt-4 max-w-md text-espresso/70">
+            With affordable pricing, expert craftsmanship, and attention to
+            detail, we deliver stylish, well-fitted clothing along with
+            convenient doorstep delivery.
+          </p>
+          <div className="mt-8 grid grid-cols-2 gap-6 border-t border-black/10 pt-8 sm:grid-cols-4">
             <div>
-              <p className="font-display text-3xl text-gold">20+</p>
-              <p className="mt-1 text-xs text-espresso/60">Curated materials</p>
+              <p className="font-display text-3xl text-gold">10+</p>
+              <p className="mt-1 text-xs text-espresso/60">Years Expertise</p>
             </div>
             <div>
               <p className="font-display text-3xl text-gold">100%</p>
-              <p className="mt-1 text-xs text-espresso/60">Made to order</p>
+              <p className="mt-1 text-xs text-espresso/60">Made-to-Measure Fit</p>
             </div>
             <div>
-              <p className="font-display text-3xl text-gold">4.9★</p>
-              <p className="mt-1 text-xs text-espresso/60">Average rating</p>
+              <p className="font-display text-3xl text-gold">20+</p>
+              <p className="mt-1 text-xs text-espresso/60">Fabric Choices</p>
+            </div>
+            <div>
+              <p className="font-display text-3xl text-gold">150+</p>
+              <p className="mt-1 text-xs text-espresso/60">Happy Customers</p>
             </div>
           </div>
         </motion.div>
