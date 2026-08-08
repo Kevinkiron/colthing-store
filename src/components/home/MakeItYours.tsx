@@ -15,7 +15,7 @@ export default function MakeItYours() {
         >
           <span className="text-xs uppercase tracking-[0.35em] text-gold-light">Make it yours</span>
           <h2 className="font-display mt-4 text-4xl md:text-5xl">
-            Love a design? Make it your own ✨
+            Love a design? Make it your own
           </h2>
           <p className="mt-5 max-w-md text-white/65">
             Choose from our pre-designed styles and customise the details to
