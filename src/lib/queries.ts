@@ -12,8 +12,8 @@ const PRODUCT_SELECT = `
   *,
   categories ( id, name, slug, sort_order ),
   materials ( id, name, slug, description, main_image ),
-  product_images ( id, product_id, url, alt, sort_order, color ),
-  product_variants ( id, product_id, size, color, color_hex, sku, price, stock ),
+  product_images ( id, product_id, url, alt, sort_order ),
+  product_variants ( id, product_id, size, sku, price, stock ),
   customization_options ( id, product_id, name, sort_order, is_active,
     customization_values ( id, option_id, label, description, image, additional_price, is_active, sort_order )
   )
@@ -21,7 +21,6 @@ const PRODUCT_SELECT = `
 
 const MATERIAL_SELECT = `
   *,
-  categories ( id, name, slug, sort_order ),
   material_images ( id, material_id, url, image_type, alt, sort_order )
 `;
 
@@ -49,19 +48,14 @@ export async function getFeaturedMaterials(client: SupabaseClient, limit = 6) {
   return (data ?? []) as Material[];
 }
 
-export async function getMaterials(client: SupabaseClient, opts: { categorySlug?: string } = {}) {
-  const query = client
+export async function getMaterials(client: SupabaseClient) {
+  const { data, error } = await client
     .from("materials")
     .select(MATERIAL_SELECT)
     .eq("is_active", true)
     .order("created_at", { ascending: false });
-  const { data, error } = await query;
   if (error) throw error;
-  let materials = (data ?? []) as Material[];
-  if (opts.categorySlug) {
-    materials = materials.filter((m) => m.categories?.slug === opts.categorySlug);
-  }
-  return materials;
+  return (data ?? []) as Material[];
 }
 
 export async function getMaterialBySlug(client: SupabaseClient, slug: string) {

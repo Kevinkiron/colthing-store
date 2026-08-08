@@ -62,7 +62,7 @@ export default function CartDrawer() {
                           {l.itemType === "customized" ? "Customized Design" : "Original Design"}
                         </span>
                         <p className="mt-1 text-xs text-black/50">
-                          {l.color} / {l.size}
+                          {l.size}
                         </p>
                         <div className="mt-2 flex items-center justify-between">
                           <div className="flex items-center gap-2 rounded-full border border-black/15 px-2 py-1">

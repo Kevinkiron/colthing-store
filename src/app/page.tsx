@@ -5,7 +5,7 @@ import BrandStory from "@/components/home/BrandStory";
 import FeaturedMaterials from "@/components/home/FeaturedMaterials";
 import OneMaterialManyPossibilities from "@/components/home/OneMaterialManyPossibilities";
 import ReadyToWear from "@/components/home/ReadyToWear";
-import FeaturedProduct3D from "@/components/home/FeaturedProduct3D";
+import ProductShowcase from "@/components/home/FeaturedProduct3D";
 import MakeItYours from "@/components/home/MakeItYours";
 import HaveYourOwnIdea from "@/components/home/HaveYourOwnIdea";
 import Testimonials from "@/components/home/Testimonials";
@@ -26,7 +26,7 @@ export default async function Home() {
       <FeaturedMaterials materials={materials} />
       {combo && <OneMaterialManyPossibilities material={combo.material} products={combo.products} />}
       <ReadyToWear products={products} />
-      <FeaturedProduct3D />
+      <ProductShowcase product={products[0] ?? null} />
       <MakeItYours />
       <HaveYourOwnIdea />
       <Testimonials />

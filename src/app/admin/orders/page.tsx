@@ -7,7 +7,6 @@ type OrderItem = {
   id: string;
   product_name: string;
   size: string | null;
-  color: string | null;
   quantity: number;
   unit_price: number;
   item_type: string;
@@ -90,7 +89,7 @@ export default function AdminOrdersPage() {
                   <li key={item.id}>
                     <div className="flex justify-between">
                       <span>
-                        {item.product_name} ({item.color}/{item.size}) x{item.quantity}
+                        {item.product_name} ({item.size}) x{item.quantity}
                         <span className="ml-2 rounded-full bg-black/5 px-2 py-0.5 text-[10px] uppercase tracking-wide text-black/50">
                           {item.item_type === "customized" ? "Customized" : "Original"}
                         </span>

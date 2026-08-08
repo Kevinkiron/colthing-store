@@ -21,7 +21,6 @@ export type Material = {
   id: string;
   name: string;
   slug: string;
-  category_id: string | null;
   description: string | null;
   composition: string | null;
   color: string | null;
@@ -32,7 +31,6 @@ export type Material = {
   is_active: boolean;
   is_featured: boolean;
   created_at: string;
-  categories?: Category | null;
   material_images?: MaterialImage[];
   products?: Product[];
 };
@@ -43,15 +41,12 @@ export type ProductImage = {
   url: string;
   alt: string | null;
   sort_order: number;
-  color: string | null;
 };
 
 export type ProductVariant = {
   id: string;
   product_id: string;
   size: string;
-  color: string;
-  color_hex: string | null;
   sku: string | null;
   price: number | null;
   stock: number;
@@ -194,7 +189,6 @@ export type CartLine = {
   slug: string;
   name: string;
   size: string;
-  color: string;
   basePrice: number;
   customizationPrice: number;
   price: number;

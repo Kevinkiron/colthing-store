@@ -22,9 +22,7 @@ export default async function MaterialDetailPage({
     <main className="pb-24 pt-32">
       <div className="mx-auto max-w-7xl px-6 md:px-10">
         <div className="mb-12 text-center">
-          {material.categories && (
-            <span className="text-xs uppercase tracking-[0.35em] text-gold">{material.categories.name}</span>
-          )}
+          <span className="text-xs uppercase tracking-[0.35em] text-gold">Material</span>
           <h1 className="font-display mt-4 text-4xl md:text-6xl">{material.name}</h1>
         </div>
 

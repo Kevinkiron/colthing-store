@@ -13,7 +13,7 @@ export default function AdminMaterialsPage() {
 
   async function load() {
     setLoading(true);
-    const { data } = await supabase.from("materials").select("*, categories(*)").order("created_at", { ascending: false });
+    const { data } = await supabase.from("materials").select("*").order("created_at", { ascending: false });
     setMaterials((data as Material[]) ?? []);
     setLoading(false);
   }
@@ -44,7 +44,6 @@ export default function AdminMaterialsPage() {
             <thead>
               <tr className="border-b border-black/10 text-xs uppercase text-black/40">
                 <th className="p-4">Material</th>
-                <th className="p-4">Category</th>
                 <th className="p-4">Status</th>
                 <th className="p-4" />
               </tr>
@@ -59,7 +58,6 @@ export default function AdminMaterialsPage() {
                     {m.name}
                     {m.is_featured && <span className="rounded-full bg-gold/10 px-2 py-0.5 text-[10px] text-gold">Featured</span>}
                   </td>
-                  <td className="p-4 text-black/60">{m.categories?.name ?? "—"}</td>
                   <td className="p-4">
                     <span className={`rounded-full px-2.5 py-1 text-xs ${m.is_active ? "bg-black/5" : "bg-red-50 text-red-600"}`}>
                       {m.is_active ? "Active" : "Inactive"}

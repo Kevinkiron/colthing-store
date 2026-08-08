@@ -40,7 +40,7 @@ export default function CartPage() {
                   <span className="mt-0.5 w-fit rounded-full bg-black/5 px-2 py-0.5 text-[10px] uppercase tracking-wide text-black/50">
                     {l.itemType === "customized" ? "Customized Design" : "Original Design"}
                   </span>
-                  <p className="mt-1 text-sm text-black/50">{l.color} / {l.size}</p>
+                  <p className="mt-1 text-sm text-black/50">{l.size}</p>
                   {l.customization && l.customization.length > 0 && (
                     <ul className="mt-1 space-y-0.5 text-xs text-black/45">
                       {l.customization.map((c, i) => (

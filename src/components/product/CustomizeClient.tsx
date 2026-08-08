@@ -13,12 +13,10 @@ export default function CustomizeClient({ product }: { product: Product }) {
   const router = useRouter();
   const addLine = useCartStore((s) => s.addLine);
   const images = product.product_images ?? [];
-  const colors = Array.from(new Set((product.product_variants ?? []).map((v) => v.color)));
   const options = (product.customization_options ?? [])
     .filter((o) => o.is_active)
     .sort((a, b) => a.sort_order - b.sort_order);
 
-  const [color, setColor] = useState(colors[0] ?? "");
   const [selections, setSelections] = useState<Record<string, string>>({});
   const [measurements, setMeasurements] = useState<Record<string, string>>({});
   const [added, setAdded] = useState(false);
@@ -40,7 +38,7 @@ export default function CustomizeClient({ product }: { product: Product }) {
   const customizationPrice = chosen.reduce((sum, c) => sum + c.price, 0);
   const total = product.base_price + customizationPrice;
 
-  const representativeVariant = (product.product_variants ?? []).find((v) => v.color === color) ?? null;
+  const representativeVariant = (product.product_variants ?? [])[0] ?? null;
 
   function handleAddToCart() {
     addLine({
@@ -50,7 +48,6 @@ export default function CustomizeClient({ product }: { product: Product }) {
       slug: product.slug,
       name: product.name,
       size: "Made to Measure",
-      color: color || "As Shown",
       basePrice: product.base_price,
       customizationPrice,
       price: total,
@@ -79,23 +76,11 @@ export default function CustomizeClient({ product }: { product: Product }) {
         </div>
 
         <div>
-          {colors.length > 1 && (
+          {product.materials?.color && (
             <div className="mb-8">
-              <p className="mb-3 text-xs uppercase tracking-wide text-espresso/50">Base Colour — {color}</p>
-              <div className="flex flex-wrap gap-2">
-                {colors.map((c) => (
-                  <button
-                    key={c}
-                    onClick={() => setColor(c)}
-                    className={cn(
-                      "rounded-full border px-4 py-1.5 text-xs transition",
-                      color === c ? "border-gold bg-gold/10" : "border-black/15"
-                    )}
-                  >
-                    {c}
-                  </button>
-                ))}
-              </div>
+              <p className="text-xs uppercase tracking-wide text-espresso/50">
+                Base Colour — <span className="normal-case text-espresso/80">{product.materials.color}</span>
+              </p>
             </div>
           )}
 

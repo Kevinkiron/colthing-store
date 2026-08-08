@@ -13,11 +13,9 @@ import SizeGuideModal from "@/components/product/SizeGuideModal";
 export default function ProductDetailClient({ product }: { product: Product }) {
   const images = (product.product_images ?? []).sort((a, b) => a.sort_order - b.sort_order);
   const variants = product.product_variants ?? [];
-  const colors = Array.from(new Set(variants.map((v) => v.color)));
   const sizes = Array.from(new Set(variants.map((v) => v.size)));
 
   const [activeImage, setActiveImage] = useState(0);
-  const [color, setColor] = useState(colors[0] ?? "");
   const [size, setSize] = useState(sizes[0] ?? "");
   const [showSizeGuide, setShowSizeGuide] = useState(false);
   const [qty, setQty] = useState(1);
@@ -27,8 +25,8 @@ export default function ProductDetailClient({ product }: { product: Product }) {
   const has = useWishlistStore((s) => s.has(product.id));
 
   const selectedVariant = useMemo(
-    () => variants.find((v) => v.color === color && v.size === size),
-    [variants, color, size]
+    () => variants.find((v) => v.size === size),
+    [variants, size]
   );
 
   const price = selectedVariant?.price ?? product.base_price;
@@ -94,27 +92,11 @@ export default function ProductDetailClient({ product }: { product: Product }) {
             <p className="mt-2 max-w-md text-sm text-espresso/50">{product.design_details}</p>
           )}
 
-          {colors.length > 0 && (
+          {product.materials?.color && (
             <div className="mt-8">
-              <p className="mb-3 text-xs uppercase tracking-wide text-espresso/50">Colour — {color}</p>
-              <div className="flex flex-wrap gap-2">
-                {colors.map((c) => {
-                  const swatch = variants.find((v) => v.color === c)?.color_hex ?? "#ccc";
-                  return (
-                    <button
-                      key={c}
-                      onClick={() => setColor(c)}
-                      className={cn(
-                        "flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs transition",
-                        color === c ? "border-gold bg-gold/10" : "border-black/15"
-                      )}
-                    >
-                      <span className="h-3.5 w-3.5 rounded-full border border-black/10" style={{ backgroundColor: swatch }} />
-                      {c}
-                    </button>
-                  );
-                })}
-              </div>
+              <p className="text-xs uppercase tracking-wide text-espresso/50">
+                Colour — <span className="normal-case text-espresso/80">{product.materials.color}</span>
+              </p>
             </div>
           )}
 
@@ -131,7 +113,7 @@ export default function ProductDetailClient({ product }: { product: Product }) {
               </div>
               <div className="flex flex-wrap gap-2">
                 {sizes.map((s) => {
-                  const stockForSize = variants.find((v) => v.size === s && v.color === color)?.stock ?? 0;
+                  const stockForSize = variants.find((v) => v.size === s)?.stock ?? 0;
                   return (
                     <button
                       key={s}
@@ -174,7 +156,6 @@ export default function ProductDetailClient({ product }: { product: Product }) {
                     slug: product.slug,
                     name: product.name,
                     size,
-                    color,
                     basePrice: price,
                     customizationPrice: 0,
                     price,

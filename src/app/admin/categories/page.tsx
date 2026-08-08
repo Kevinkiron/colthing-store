@@ -5,8 +5,8 @@ import { createClient } from "@/lib/supabase/client";
 import type { Category } from "@/lib/types";
 import { slugify } from "@/lib/utils";
 
-type FormState = { id?: string; name: string; slug: string; description: string; image_url: string; sort_order: string; is_active: boolean };
-const emptyForm: FormState = { name: "", slug: "", description: "", image_url: "", sort_order: "0", is_active: true };
+type FormState = { id?: string; name: string; slug: string; description: string; sort_order: string; is_active: boolean };
+const emptyForm: FormState = { name: "", slug: "", description: "", sort_order: "0", is_active: true };
 
 export default function AdminCategoriesPage() {
   const supabase = createClient();
@@ -33,7 +33,6 @@ export default function AdminCategoriesPage() {
       name: c.name,
       slug: c.slug,
       description: c.description ?? "",
-      image_url: c.image_url ?? "",
       sort_order: String(c.sort_order),
       is_active: c.is_active,
     });
@@ -46,7 +45,6 @@ export default function AdminCategoriesPage() {
       name: form.name,
       slug: form.slug || slugify(form.name),
       description: form.description || null,
-      image_url: form.image_url || null,
       sort_order: parseInt(form.sort_order || "0", 10),
       is_active: form.is_active,
     };
@@ -124,7 +122,6 @@ export default function AdminCategoriesPage() {
               <input placeholder="Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value, slug: form.slug || slugify(e.target.value) })} className="w-full rounded-lg border border-black/15 px-3 py-2 text-sm" />
               <input placeholder="Slug" value={form.slug} onChange={(e) => setForm({ ...form, slug: e.target.value })} className="w-full rounded-lg border border-black/15 px-3 py-2 text-sm" />
               <textarea placeholder="Description" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={2} className="w-full rounded-lg border border-black/15 px-3 py-2 text-sm" />
-              <input placeholder="Image URL (optional)" value={form.image_url} onChange={(e) => setForm({ ...form, image_url: e.target.value })} className="w-full rounded-lg border border-black/15 px-3 py-2 text-sm" />
               <input type="number" placeholder="Sort order" value={form.sort_order} onChange={(e) => setForm({ ...form, sort_order: e.target.value })} className="w-full rounded-lg border border-black/15 px-3 py-2 text-sm" />
               <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={form.is_active} onChange={(e) => setForm({ ...form, is_active: e.target.checked })} /> Active</label>
             </div>

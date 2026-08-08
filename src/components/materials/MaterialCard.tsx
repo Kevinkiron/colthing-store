@@ -24,10 +24,7 @@ export default function MaterialCard({ material, index = 0 }: { material: Materi
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
           <div className="absolute inset-x-0 bottom-0 p-5">
-            {material.categories && (
-              <p className="text-[10px] uppercase tracking-[0.25em] text-white/70">{material.categories.name}</p>
-            )}
-            <p className="font-display mt-1 text-xl text-white">{material.name}</p>
+            <p className="font-display text-xl text-white">{material.name}</p>
             <span className="mt-3 inline-block text-xs uppercase tracking-wide text-gold-light underline underline-offset-4">
               Explore Material
             </span>

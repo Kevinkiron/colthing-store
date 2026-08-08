@@ -65,7 +65,6 @@ export default function CheckoutPage() {
         variant_id: l.variantId,
         product_name: l.name,
         size: l.size,
-        color: l.color,
         quantity: l.quantity,
         unit_price: l.price,
         item_type: l.itemType,
@@ -143,7 +142,7 @@ export default function CheckoutPage() {
                   <span>{formatPrice(l.price * l.quantity)}</span>
                 </div>
                 <span className="text-xs text-espresso/40">
-                  {l.itemType === "customized" ? "Customized Design" : "Original Design"} — {l.color} / {l.size}
+                  {l.itemType === "customized" ? "Customized Design" : "Original Design"} — {l.size}
                 </span>
                 {l.customization && l.customization.length > 0 && (
                   <ul className="mt-1 pl-3 text-xs text-espresso/40">

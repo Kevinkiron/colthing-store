@@ -7,8 +7,8 @@ import { slugify } from "@/lib/utils";
 import { GARMENT_TYPE_LABELS } from "@/lib/measurementFields";
 import type { Category, GarmentType, Material, Product } from "@/lib/types";
 
-type ImageRow = { id?: string; url: string; alt: string; color: string };
-type VariantRow = { id?: string; size: string; color: string; color_hex: string; sku: string; price: string; stock: string };
+type ImageRow = { id?: string; url: string; alt: string };
+type VariantRow = { id?: string; size: string; sku: string; price: string; stock: string };
 type CustomValueRow = { id?: string; label: string; description: string; additional_price: string; is_active: boolean };
 type CustomOptionRow = { id?: string; name: string; is_active: boolean; values: CustomValueRow[] };
 
@@ -39,13 +39,13 @@ export default function ProductForm({ product }: { product?: Product }) {
   const [isNew, setIsNew] = useState(product?.is_new ?? true);
   const [status, setStatus] = useState(product?.status ?? "active");
   const [images, setImages] = useState<ImageRow[]>(
-    product?.product_images?.map((i) => ({ id: i.id, url: i.url, alt: i.alt ?? "", color: i.color ?? "" })) ?? []
+    product?.product_images?.map((i) => ({ id: i.id, url: i.url, alt: i.alt ?? "" })) ?? []
   );
   const [variants, setVariants] = useState<VariantRow[]>(
     product?.product_variants?.map((v) => ({
-      id: v.id, size: v.size, color: v.color, color_hex: v.color_hex ?? "", sku: v.sku ?? "",
+      id: v.id, size: v.size, sku: v.sku ?? "",
       price: v.price?.toString() ?? "", stock: v.stock?.toString() ?? "0",
-    })) ?? [{ size: "M", color: "Beige", color_hex: "#e8ddce", sku: "", price: "", stock: "10" }]
+    })) ?? [{ size: "M", sku: "", price: "", stock: "10" }]
   );
   const [options, setOptions] = useState<CustomOptionRow[]>(
     product?.customization_options
@@ -70,11 +70,11 @@ export default function ProductForm({ product }: { product?: Product }) {
     if (!slugTouched) setSlug(slugify(name));
   }, [name, slugTouched]);
 
-  function addVariant() { setVariants((v) => [...v, { size: "", color: "", color_hex: "#111111", sku: "", price: "", stock: "0" }]); }
+  function addVariant() { setVariants((v) => [...v, { size: "", sku: "", price: "", stock: "0" }]); }
   function updateVariant(i: number, patch: Partial<VariantRow>) { setVariants((v) => v.map((row, idx) => (idx === i ? { ...row, ...patch } : row))); }
   function removeVariant(i: number) { setVariants((v) => v.filter((_, idx) => idx !== i)); }
 
-  function addImageUrl() { setImages((imgs) => [...imgs, { url: "", alt: name, color: "" }]); }
+  function addImageUrl() { setImages((imgs) => [...imgs, { url: "", alt: name }]); }
   function updateImage(i: number, patch: Partial<ImageRow>) { setImages((imgs) => imgs.map((row, idx) => (idx === i ? { ...row, ...patch } : row))); }
   function removeImage(i: number) { setImages((imgs) => imgs.filter((_, idx) => idx !== i)); }
 
@@ -101,7 +101,7 @@ export default function ProductForm({ product }: { product?: Product }) {
         const { error: uploadErr } = await supabase.storage.from("product-images").upload(path, file);
         if (uploadErr) throw uploadErr;
         const { data } = supabase.storage.from("product-images").getPublicUrl(path);
-        newImages.push({ url: data.publicUrl, alt: name, color: "" });
+        newImages.push({ url: data.publicUrl, alt: name });
       }
       setImages((imgs) => [...imgs, ...newImages]);
     } catch (err) {
@@ -144,14 +144,14 @@ export default function ProductForm({ product }: { product?: Product }) {
 
       if (images.length > 0) {
         await supabase.from("product_images").insert(
-          images.filter((i) => i.url).map((i, idx) => ({ product_id: productId, url: i.url, alt: i.alt || name, color: i.color || null, sort_order: idx }))
+          images.filter((i) => i.url).map((i, idx) => ({ product_id: productId, url: i.url, alt: i.alt || name, sort_order: idx }))
         );
       }
 
       if (variants.length > 0) {
         await supabase.from("product_variants").insert(
-          variants.filter((v) => v.size && v.color).map((v) => ({
-            product_id: productId, size: v.size, color: v.color, color_hex: v.color_hex || null,
+          variants.filter((v) => v.size).map((v) => ({
+            product_id: productId, size: v.size,
             sku: v.sku || null, price: v.price ? parseFloat(v.price) : null, stock: parseInt(v.stock || "0", 10),
           }))
         );
@@ -295,7 +295,6 @@ export default function ProductForm({ product }: { product?: Product }) {
           {images.map((img, i) => (
             <div key={i} className="flex gap-2">
               <input placeholder="Image URL" value={img.url} onChange={(e) => updateImage(i, { url: e.target.value })} className="flex-1 rounded-lg border border-black/15 px-3 py-2 text-xs" />
-              <input placeholder="Color (optional)" value={img.color} onChange={(e) => updateImage(i, { color: e.target.value })} className="w-32 rounded-lg border border-black/15 px-3 py-2 text-xs" />
               <button type="button" onClick={() => removeImage(i)} aria-label="Remove image"><Trash2 className="h-4 w-4 text-black/40" /></button>
             </div>
           ))}
@@ -304,15 +303,13 @@ export default function ProductForm({ product }: { product?: Product }) {
 
       <div>
         <div className="mb-2 flex items-center justify-between">
-          <label className="text-xs text-black/50">Variants (Size / Colour / Stock)</label>
+          <label className="text-xs text-black/50">Variants (Size / Stock)</label>
           <button type="button" onClick={addVariant} className="flex items-center gap-1 text-xs text-black/60 underline"><Plus className="h-3 w-3" /> Add Variant</button>
         </div>
         <div className="space-y-2">
           {variants.map((v, i) => (
-            <div key={i} className="grid grid-cols-6 gap-2">
+            <div key={i} className="grid grid-cols-4 gap-2">
               <input placeholder="Size" value={v.size} onChange={(e) => updateVariant(i, { size: e.target.value })} className="rounded-lg border border-black/15 px-2 py-2 text-xs" />
-              <input placeholder="Colour" value={v.color} onChange={(e) => updateVariant(i, { color: e.target.value })} className="rounded-lg border border-black/15 px-2 py-2 text-xs" />
-              <input type="color" value={v.color_hex || "#111111"} onChange={(e) => updateVariant(i, { color_hex: e.target.value })} className="h-9 w-full rounded-lg border border-black/15" />
               <input placeholder="SKU" value={v.sku} onChange={(e) => updateVariant(i, { sku: e.target.value })} className="rounded-lg border border-black/15 px-2 py-2 text-xs" />
               <input type="number" step="0.01" placeholder="Price override" value={v.price} onChange={(e) => updateVariant(i, { price: e.target.value })} className="rounded-lg border border-black/15 px-2 py-2 text-xs" />
               <div className="flex items-center gap-1">

@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { Trash2, Upload, Loader2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { slugify } from "@/lib/utils";
-import type { Category, Material } from "@/lib/types";
+import type { Material } from "@/lib/types";
 
 type ImageRow = { id?: string; url: string; image_type: "gallery" | "texture" | "lifestyle"; alt: string };
 
@@ -13,11 +13,9 @@ export default function MaterialForm({ material }: { material?: Material }) {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [categories, setCategories] = useState<Category[]>([]);
   const [name, setName] = useState(material?.name ?? "");
   const [slug, setSlug] = useState(material?.slug ?? "");
   const [slugTouched, setSlugTouched] = useState(!!material);
-  const [categoryId, setCategoryId] = useState(material?.category_id ?? "");
   const [description, setDescription] = useState(material?.description ?? "");
   const [composition, setComposition] = useState(material?.composition ?? "");
   const [color, setColor] = useState(material?.color ?? "");
@@ -33,10 +31,6 @@ export default function MaterialForm({ material }: { material?: Material }) {
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    supabase.from("categories").select("*").order("sort_order").then(({ data }) => setCategories((data as Category[]) ?? []));
-  }, []);
 
   useEffect(() => {
     if (!slugTouched) setSlug(slugify(name));
@@ -70,7 +64,7 @@ export default function MaterialForm({ material }: { material?: Material }) {
     setError(null);
     try {
       const payload = {
-        name, slug, category_id: categoryId || null, description,
+        name, slug, description,
         composition, color, texture, characteristics, care_instructions: care,
         main_image: mainImage || null, is_active: isActive, is_featured: isFeatured,
       };
@@ -119,14 +113,6 @@ export default function MaterialForm({ material }: { material?: Material }) {
           <label className="mb-1 block text-xs text-black/50">Slug</label>
           <input required value={slug} onChange={(e) => { setSlug(e.target.value); setSlugTouched(true); }} className="w-full rounded-lg border border-black/15 px-3 py-2.5 text-sm" />
         </div>
-      </div>
-
-      <div>
-        <label className="mb-1 block text-xs text-black/50">Category</label>
-        <select value={categoryId ?? ""} onChange={(e) => setCategoryId(e.target.value)} className="w-full rounded-lg border border-black/15 px-3 py-2.5 text-sm">
-          <option value="">Uncategorized</option>
-          {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-        </select>
       </div>
 
       <div>
@@ -186,7 +172,20 @@ export default function MaterialForm({ material }: { material?: Material }) {
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={img.url} alt={img.alt} className="h-20 w-full rounded-lg object-cover" />
               <span className="absolute left-1 top-1 rounded bg-black/60 px-1.5 py-0.5 text-[9px] capitalize text-white">{img.image_type}</span>
-              <button type="button" onClick={() => setImages((imgs) => imgs.filter((_, idx) => idx !== i))} className="absolute right-1 top-1 rounded-full bg-black/60 p-0.5 text-white">
+              <button
+                type="button"
+                onClick={() => {
+                  setImages((imgs) => {
+                    const removed = imgs[i];
+                    const next = imgs.filter((_, idx) => idx !== i);
+                    if (removed && removed.url === mainImage) {
+                      setMainImage(next[0]?.url ?? "");
+                    }
+                    return next;
+                  });
+                }}
+                className="absolute right-1 top-1 rounded-full bg-black/60 p-0.5 text-white"
+              >
                 <Trash2 className="h-3 w-3" />
               </button>
             </div>

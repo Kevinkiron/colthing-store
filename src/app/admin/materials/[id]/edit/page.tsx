@@ -12,7 +12,7 @@ export default function EditMaterialPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    supabase.from("materials").select("*, categories(*), material_images(*)").eq("id", id).single().then(({ data }) => {
+    supabase.from("materials").select("*, material_images(*)").eq("id", id).single().then(({ data }) => {
       setMaterial(data as Material);
       setLoading(false);
     });
