@@ -1,56 +1,21 @@
 "use client";
 import { useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import type { Product } from "@/lib/types";
 import { formatPrice, cn } from "@/lib/utils";
+import Spin360 from "./Spin360";
 
-export default function ProductShowcase({ product }: { product: Product | null }) {
-  const images = (product?.product_images ?? []).slice().sort((a, b) => a.sort_order - b.sort_order);
+export default function FeaturedProduct3D({ product, frames }: { product: Product | null; frames: string[] }) {
   const sizes = Array.from(new Set((product?.product_variants ?? []).map((v) => v.size)));
+  const [size, setSize] = useState(sizes[0] ?? "M");
 
-  const [activeImage, setActiveImage] = useState(0);
-  const [size, setSize] = useState(sizes[0] ?? "");
-
-  if (!product || images.length === 0) return null;
+  if (frames.length === 0) return null;
 
   return (
     <section className="relative overflow-hidden bg-espresso py-24 text-white md:py-32">
       <div className="mx-auto grid max-w-7xl items-center gap-10 px-6 md:grid-cols-2 md:px-10">
-        <div>
-          <motion.div
-            key={images[activeImage].id}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.4 }}
-            className="relative aspect-[3/4] w-full overflow-hidden rounded-2xl bg-charcoal"
-          >
-            <Image
-              src={images[activeImage].url}
-              alt={images[activeImage].alt ?? product.name}
-              fill
-              className="object-cover"
-            />
-          </motion.div>
-          {images.length > 1 && (
-            <div className="mt-4 flex gap-3">
-              {images.map((img, i) => (
-                <button
-                  key={img.id}
-                  onClick={() => setActiveImage(i)}
-                  aria-label={`View photo ${i + 1}`}
-                  className={cn(
-                    "relative h-20 w-16 overflow-hidden rounded-lg border-2 transition",
-                    activeImage === i ? "border-gold" : "border-white/20 hover:border-white/50"
-                  )}
-                >
-                  <Image src={img.url} alt={img.alt ?? product.name} fill className="object-cover" />
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
+        <Spin360 frames={frames} alt={product?.name ?? "Rotating view of a Knit & Knot garment"} />
 
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -58,14 +23,14 @@ export default function ProductShowcase({ product }: { product: Product | null }
           viewport={{ once: true, amount: 0.5 }}
           transition={{ duration: 0.8 }}
         >
-          <span className="text-xs uppercase tracking-[0.35em] text-gold-light">See It Up Close</span>
-          <h2 className="font-display mt-4 text-4xl md:text-5xl">{product.name}</h2>
+          <span className="text-xs uppercase tracking-[0.35em] text-gold-light">See It Take Shape</span>
+          <h2 className="font-display mt-4 text-4xl md:text-5xl">{product?.name ?? "Made-to-Measure, Your Way"}</h2>
           <p className="mt-5 max-w-md text-white/60">
-            {product.description ??
-              "Real fabric, real stitching, made to your measurements. Take a closer look at one of our designs before you choose your own."}
+            {product?.description ??
+              "A real look at one of our designs, shot in the round. Drag to rotate and see the fit, the fall, and the finish before you choose your own."}
           </p>
 
-          {product.materials?.color && (
+          {product?.materials?.color && (
             <div className="mt-8">
               <p className="text-xs uppercase tracking-wide text-white/50">
                 Colour — <span className="normal-case text-white/80">{product.materials.color}</span>
@@ -93,13 +58,13 @@ export default function ProductShowcase({ product }: { product: Product | null }
             </div>
           )}
 
-          <p className="mt-6 text-lg">{formatPrice(product.base_price)}</p>
+          {product && <p className="mt-6 text-lg">{formatPrice(product.base_price)}</p>}
 
           <Link
-            href={`/product/${product.slug}`}
+            href={product ? `/product/${product.slug}` : "/shop"}
             className="mt-8 inline-block rounded-full bg-white px-8 py-3 text-sm tracking-wide text-charcoal transition hover:bg-gold-light"
           >
-            View This Design
+            {product ? "View This Design" : "Browse Designs"}
           </Link>
         </motion.div>
       </div>
