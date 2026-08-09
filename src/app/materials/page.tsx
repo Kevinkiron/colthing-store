@@ -1,8 +1,16 @@
+import type { Metadata } from "next";
 import { publicSupabase } from "@/lib/supabase/public";
 import { getMaterials } from "@/lib/queries";
 import MaterialCard from "@/components/materials/MaterialCard";
 
 export const revalidate = 60;
+
+export const metadata: Metadata = {
+  title: "Our Materials — Fabrics for Custom Tailoring",
+  description:
+    "Browse the fabrics available at Knit & Knot's Trivandrum tailoring centre — linen, cotton and more, each with composition, texture and care details, before you choose a design.",
+  alternates: { canonical: "/materials" },
+};
 
 export default async function MaterialsPage() {
   const materials = await getMaterials(publicSupabase).catch(() => []);

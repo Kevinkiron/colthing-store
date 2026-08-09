@@ -1,9 +1,37 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { publicSupabase } from "@/lib/supabase/public";
 import { getMaterialBySlug } from "@/lib/queries";
 import { formatPrice } from "@/lib/utils";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const material = await getMaterialBySlug(publicSupabase, slug);
+  if (!material) return {};
+
+  const title = material.name;
+  const description =
+    material.description?.slice(0, 155) ??
+    `${material.name} — a fabric available at Knit & Knot's custom tailoring centre in Trivandrum.`;
+
+  return {
+    title,
+    description,
+    alternates: { canonical: `/materials/${material.slug}` },
+    openGraph: {
+      title,
+      description,
+      type: "website",
+      images: material.main_image ? [{ url: material.main_image }] : undefined,
+    },
+  };
+}
 
 export default async function MaterialDetailPage({
   params,

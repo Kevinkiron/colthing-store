@@ -1,5 +1,13 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import CustomRequestForm from "@/components/custom/CustomRequestForm";
+
+export const metadata: Metadata = {
+  title: "Create a Custom Design — Bespoke Tailoring",
+  description:
+    "Share your reference images, measurements and preferred material with Knit & Knot's Trivandrum tailors, and get a fully custom, made-to-measure outfit designed around your idea.",
+  alternates: { canonical: "/custom-request" },
+};
 
 export default function CustomRequestPage() {
   return (
