@@ -4,10 +4,11 @@ import Link from "next/link";
 import { Instagram, Mail, Phone } from "lucide-react";
 import { publicSupabase } from "@/lib/supabase/public";
 import WhatsAppIcon from "@/components/layout/WhatsAppIcon";
+import { BUSINESS_PHONE_DIGITS, BUSINESS_PHONE_DISPLAY, BUSINESS_EMAIL, BUSINESS_INSTAGRAM } from "@/lib/seo";
 
-const WHATSAPP_NUMBER = "919562572931";
+const WHATSAPP_NUMBER = BUSINESS_PHONE_DIGITS;
 const WHATSAPP_MESSAGE = "Hi Knit & Knot! I'd like to make a custom request.";
-const INSTAGRAM_URL = "https://www.instagram.com/knit__and_knot/";
+const INSTAGRAM_URL = BUSINESS_INSTAGRAM;
 
 export default function ContactClient() {
   const [form, setForm] = useState({ name: "", email: "", phone: "", message: "" });
@@ -52,7 +53,7 @@ export default function ContactClient() {
           </span>
           <div>
             <p className="font-display text-lg">Chat on WhatsApp</p>
-            <p className="text-sm text-espresso/50">+91 95625 72931 — fastest way to reach us</p>
+            <p className="text-sm text-espresso/50">{BUSINESS_PHONE_DISPLAY} — fastest way to reach us</p>
           </div>
         </a>
 
@@ -103,8 +104,8 @@ export default function ContactClient() {
       )}
 
       <div className="mt-10 flex flex-col items-center gap-2 text-sm text-espresso/50">
-        <p className="flex items-center gap-2"><Mail className="h-4 w-4 text-gold" /> hello@knitandknot.com</p>
-        <p className="flex items-center gap-2"><Phone className="h-4 w-4 text-gold" /> +91 95625 72931</p>
+        <p className="flex items-center gap-2"><Mail className="h-4 w-4 text-gold" /> {BUSINESS_EMAIL}</p>
+        <p className="flex items-center gap-2"><Phone className="h-4 w-4 text-gold" /> {BUSINESS_PHONE_DISPLAY}</p>
       </div>
     </main>
   );

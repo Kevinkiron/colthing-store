@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { BUSINESS_EMAIL } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: "Privacy Policy",
@@ -79,7 +80,7 @@ export default function PrivacyPolicyPage() {
           <h2 className="font-display mb-2 text-xl text-espresso">7. Contact Us</h2>
           <p>
             For any questions about this policy or your data, reach us at{" "}
-            <a href="mailto:hello@knitandknot.com" className="underline underline-offset-2">hello@knitandknot.com</a>{" "}
+            <a href={`mailto:${BUSINESS_EMAIL}`} className="underline underline-offset-2">{BUSINESS_EMAIL}</a>{" "}
             or via the contact options on our{" "}
             <a href="/contact" className="underline underline-offset-2">Contact page</a>.
           </p>

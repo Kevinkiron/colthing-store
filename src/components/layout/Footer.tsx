@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { Instagram, Facebook, MapPin } from "lucide-react";
 import WhatsAppIcon from "./WhatsAppIcon";
+import { BUSINESS_WHATSAPP, BUSINESS_FACEBOOK, BUSINESS_INSTAGRAM } from "@/lib/seo";
 
 export default function Footer() {
   return (
@@ -19,13 +20,13 @@ export default function Footer() {
               women.
             </p>
             <div className="mt-6 flex gap-4">
-              <a href="https://wa.me/919562572931" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp" className="rounded-full border border-white/15 p-2 transition hover:border-gold hover:text-gold">
+              <a href={BUSINESS_WHATSAPP} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp" className="rounded-full border border-white/15 p-2 transition hover:border-gold hover:text-gold">
                 <WhatsAppIcon className="h-4 w-4" />
               </a>
-              <a href="https://www.instagram.com/knit__and_knot/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="rounded-full border border-white/15 p-2 transition hover:border-gold hover:text-gold">
+              <a href={BUSINESS_INSTAGRAM} target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="rounded-full border border-white/15 p-2 transition hover:border-gold hover:text-gold">
                 <Instagram className="h-4 w-4" />
               </a>
-              <a href="#" aria-label="Facebook" className="rounded-full border border-white/15 p-2 transition hover:border-gold hover:text-gold">
+              <a href={BUSINESS_FACEBOOK} target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="rounded-full border border-white/15 p-2 transition hover:border-gold hover:text-gold">
                 <Facebook className="h-4 w-4" />
               </a>
             </div>

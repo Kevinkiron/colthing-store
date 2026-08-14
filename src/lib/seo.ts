@@ -1,8 +1,17 @@
 export const SITE_URL = "https://www.knitandknot.shop";
 export const SITE_NAME = "Knit & Knot";
-export const BUSINESS_PHONE = "+919562572931";
+
+// Digits only — used for wa.me / tel: links.
+export const BUSINESS_PHONE_DIGITS = "919633822168";
+// E.164-style — used in structured data.
+export const BUSINESS_PHONE = "+919633822168";
+// Human-readable — used anywhere the number is shown to a visitor.
+export const BUSINESS_PHONE_DISPLAY = "+91 96338 22168";
+
+export const BUSINESS_EMAIL = "knotknit3@gmail.com";
 export const BUSINESS_INSTAGRAM = "https://www.instagram.com/knit__and_knot/";
-export const BUSINESS_WHATSAPP = "https://wa.me/919562572931";
+export const BUSINESS_WHATSAPP = `https://wa.me/${BUSINESS_PHONE_DIGITS}`;
+export const BUSINESS_FACEBOOK = "https://www.facebook.com/share/1Btdg98ufR/";
 
 export const DEFAULT_TITLE = "Knit & Knot — Custom Tailoring & Stitching Centre in Trivandrum";
 export const DEFAULT_DESCRIPTION =
@@ -27,6 +36,7 @@ export const localBusinessJsonLd = {
   name: SITE_NAME,
   url: SITE_URL,
   telephone: BUSINESS_PHONE,
+  email: BUSINESS_EMAIL,
   priceRange: "₹₹",
   image: DEFAULT_OG_IMAGE,
   description: DEFAULT_DESCRIPTION,
@@ -34,5 +44,5 @@ export const localBusinessJsonLd = {
     "@type": "City",
     name: "Thiruvananthapuram (Trivandrum)",
   },
-  sameAs: [BUSINESS_INSTAGRAM, BUSINESS_WHATSAPP],
+  sameAs: [BUSINESS_INSTAGRAM, BUSINESS_WHATSAPP, BUSINESS_FACEBOOK],
 };

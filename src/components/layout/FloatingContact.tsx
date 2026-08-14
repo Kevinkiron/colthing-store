@@ -2,10 +2,11 @@
 import { useState } from "react";
 import { Instagram } from "lucide-react";
 import WhatsAppIcon from "./WhatsAppIcon";
+import { BUSINESS_PHONE_DIGITS, BUSINESS_INSTAGRAM } from "@/lib/seo";
 
-const WHATSAPP_NUMBER = "919562572931";
+const WHATSAPP_NUMBER = BUSINESS_PHONE_DIGITS;
 const WHATSAPP_MESSAGE = "Hi Knit & Knot! I'd like to make a custom request.";
-const INSTAGRAM_URL = "https://www.instagram.com/knit__and_knot/";
+const INSTAGRAM_URL = BUSINESS_INSTAGRAM;
 
 export default function FloatingContact() {
   const [hover, setHover] = useState<"whatsapp" | "instagram" | null>(null);
