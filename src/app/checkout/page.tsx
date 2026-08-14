@@ -56,47 +56,45 @@ export default function CheckoutPage() {
     try {
       const { data: sessionData } = await supabase.auth.getSession();
 
-      const { data: order, error: orderErr } = await supabase
-        .from("orders")
-        .insert({
-          user_id: sessionData.session?.user.id ?? null,
-          customer_name: form.name,
-          customer_email: form.email,
-          customer_phone: form.phone,
-          shipping_address: {
-            address: form.address,
-            city: form.city,
-            state: form.state,
-            pincode: form.pincode,
-          },
-          subtotal,
-        })
-        .select()
-        .single();
+      // A single atomic call: validates and decrements stock, creates the
+      // order and its line items together, so inventory can never go out
+      // of sync with what was actually purchased (and two people can't
+      // both "win" the last unit of something).
+      const { data, error: rpcErr } = await supabase.rpc("place_order", {
+        p_user_id: sessionData.session?.user.id ?? null,
+        p_customer_name: form.name,
+        p_customer_email: form.email,
+        p_customer_phone: form.phone,
+        p_shipping_address: {
+          address: form.address,
+          city: form.city,
+          state: form.state,
+          pincode: form.pincode,
+        },
+        p_items: lines.map((l) => ({
+          product_id: l.productId,
+          variant_id: l.variantId,
+          product_name: l.name,
+          size: l.size,
+          quantity: l.quantity,
+          unit_price: l.price,
+          item_type: l.itemType,
+          customization: l.customization ?? null,
+          measurements: l.measurements ?? null,
+          customization_price: l.customizationPrice,
+        })),
+      });
 
-      if (orderErr) throw orderErr;
-
-      const items = lines.map((l) => ({
-        order_id: order.id,
-        product_id: l.productId,
-        variant_id: l.variantId,
-        product_name: l.name,
-        size: l.size,
-        quantity: l.quantity,
-        unit_price: l.price,
-        item_type: l.itemType,
-        customization: l.customization ?? null,
-        measurements: l.measurements ?? null,
-        customization_price: l.customizationPrice,
-      }));
-      const { error: itemsErr } = await supabase.from("order_items").insert(items);
-      if (itemsErr) throw itemsErr;
+      if (rpcErr) throw rpcErr;
+      const order = data?.[0];
+      if (!order) throw new Error("Order could not be placed.");
 
       clear();
       router.push(`/checkout/success?order=${order.order_number}`);
     } catch (err) {
       console.error(err);
-      setError("Something went wrong placing your order. Please try again.");
+      const message = err instanceof Error ? err.message : "";
+      setError(message || "Something went wrong placing your order. Please try again.");
     } finally {
       setSubmitting(false);
     }
