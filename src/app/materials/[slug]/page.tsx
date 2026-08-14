@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { publicSupabase } from "@/lib/supabase/public";
 import { getMaterialBySlug } from "@/lib/queries";
-import { formatPrice } from "@/lib/utils";
+import { formatPrice, splitList } from "@/lib/utils";
 
 export async function generateMetadata({
   params,
@@ -65,13 +65,6 @@ export default async function MaterialDetailPage({
             <h2 className="font-display text-2xl">About This Material</h2>
             <p className="mt-3 text-espresso/70">{material.description}</p>
 
-            {material.texture && (
-              <>
-                <h3 className="font-display mt-8 text-xl">Texture</h3>
-                <p className="mt-2 text-espresso/70">{material.texture}</p>
-              </>
-            )}
-
             {material.characteristics && (
               <>
                 <h3 className="font-display mt-8 text-xl">Characteristics</h3>
@@ -82,7 +75,9 @@ export default async function MaterialDetailPage({
             {material.care_instructions && (
               <>
                 <h3 className="font-display mt-8 text-xl">Care</h3>
-                <p className="mt-2 text-espresso/70">{material.care_instructions}</p>
+                <ul className="mt-2 list-disc space-y-1 pl-5 text-espresso/70">
+                  {splitList(material.care_instructions).map((item, i) => <li key={i}>{item}</li>)}
+                </ul>
               </>
             )}
           </div>

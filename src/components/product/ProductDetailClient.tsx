@@ -1,13 +1,14 @@
 "use client";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Heart, Minus, Plus, Ruler, Sparkles, Wand2 } from "lucide-react";
 import type { Product } from "@/lib/types";
-import { formatPrice, cn } from "@/lib/utils";
+import { formatPrice, cn, splitList } from "@/lib/utils";
 import { useCartStore } from "@/store/cart-store";
 import { useWishlistStore } from "@/store/wishlist-store";
+import { useRequireAuth } from "@/lib/useRequireAuth";
 import SizeGuideModal from "@/components/product/SizeGuideModal";
 
 export default function ProductDetailClient({ product }: { product: Product }) {
@@ -23,6 +24,7 @@ export default function ProductDetailClient({ product }: { product: Product }) {
   const addLine = useCartStore((s) => s.addLine);
   const toggle = useWishlistStore((s) => s.toggle);
   const has = useWishlistStore((s) => s.has(product.id));
+  const requireAuth = useRequireAuth();
 
   const selectedVariant = useMemo(
     () => variants.find((v) => v.size === size),
@@ -30,7 +32,14 @@ export default function ProductDetailClient({ product }: { product: Product }) {
   );
 
   const price = selectedVariant?.price ?? product.base_price;
-  const inStock = (selectedVariant?.stock ?? 0) > 0;
+  const maxQty = selectedVariant?.stock ?? 0;
+  const inStock = maxQty > 0;
+
+  // Stock differs per size, so clamp quantity whenever the selected variant
+  // changes instead of letting it silently exceed what's actually in stock.
+  useEffect(() => {
+    setQty((q) => Math.min(Math.max(q, 1), Math.max(maxQty, 1)));
+  }, [maxQty]);
 
   return (
     <main className="mx-auto max-w-7xl px-6 pb-24 pt-32 md:px-10">
@@ -133,12 +142,12 @@ export default function ProductDetailClient({ product }: { product: Product }) {
             </div>
           )}
 
-          <div className="mt-8 flex items-center gap-2 rounded-full border border-black/15 px-3 py-2 w-fit">
-            <button onClick={() => setQty((q) => Math.max(1, q - 1))} aria-label="Decrease">
+          <div className={cn("mt-8 flex items-center gap-2 rounded-full border border-black/15 px-3 py-2 w-fit", !inStock && "opacity-40")}>
+            <button disabled={!inStock || qty <= 1} onClick={() => setQty((q) => Math.max(1, q - 1))} aria-label="Decrease" className="disabled:cursor-not-allowed disabled:opacity-40">
               <Minus className="h-4 w-4" />
             </button>
             <span className="w-6 text-center text-sm">{qty}</span>
-            <button onClick={() => setQty((q) => q + 1)} aria-label="Increase">
+            <button disabled={!inStock || qty >= maxQty} onClick={() => setQty((q) => Math.min(q + 1, maxQty))} aria-label="Increase" className="disabled:cursor-not-allowed disabled:opacity-40">
               <Plus className="h-4 w-4" />
             </button>
           </div>
@@ -169,7 +178,7 @@ export default function ProductDetailClient({ product }: { product: Product }) {
                 {inStock ? "Buy As Shown" : "Out of Stock"}
               </button>
               <button
-                onClick={() => toggle(product.id)}
+                onClick={() => requireAuth(() => toggle(product.id))}
                 aria-label="Wishlist"
                 className="rounded-full border border-black/15 p-3.5"
               >
@@ -197,7 +206,14 @@ export default function ProductDetailClient({ product }: { product: Product }) {
           {(product.fabric || product.production_time) && (
             <div className="mt-10 space-y-2 border-t border-black/10 pt-6 text-sm text-espresso/60">
               {product.fabric && <p><span className="text-espresso/40">Fabric:</span> {product.fabric}</p>}
-              {product.care_instructions && <p><span className="text-espresso/40">Care:</span> {product.care_instructions}</p>}
+              {product.care_instructions && (
+                <div>
+                  <span className="text-espresso/40">Care:</span>
+                  <ul className="mt-1 list-disc space-y-0.5 pl-5">
+                    {splitList(product.care_instructions).map((item, i) => <li key={i}>{item}</li>)}
+                  </ul>
+                </div>
+              )}
               {product.production_time && <p><span className="text-espresso/40">Production time:</span> {product.production_time}</p>}
             </div>
           )}

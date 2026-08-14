@@ -25,6 +25,9 @@ export const metadata: Metadata = {
   keywords: [
     "custom tailoring Trivandrum",
     "tailor Trivandrum",
+    "stitching centre Trivandrum",
+    "cloth stitching online",
+    "custom stitching centre Thiruvananthapuram",
     "made to measure clothing Kerala",
     "bespoke tailoring Thiruvananthapuram",
     "custom kurta shirt dress Trivandrum",

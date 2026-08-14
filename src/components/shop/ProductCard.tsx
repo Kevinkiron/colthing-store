@@ -7,6 +7,7 @@ import { Heart } from "lucide-react";
 import type { Product } from "@/lib/types";
 import { formatPrice, cn } from "@/lib/utils";
 import { useWishlistStore } from "@/store/wishlist-store";
+import { useRequireAuth } from "@/lib/useRequireAuth";
 
 export default function ProductCard({ product, index = 0 }: { product: Product; index?: number }) {
   const images = product.product_images ?? [];
@@ -14,6 +15,7 @@ export default function ProductCard({ product, index = 0 }: { product: Product; 
   const secondary = images[1];
   const toggle = useWishlistStore((s) => s.toggle);
   const has = useWishlistStore((s) => s.has(product.id));
+  const requireAuth = useRequireAuth();
   const [hover, setHover] = useState(false);
 
   const lowestStock = Math.min(...(product.product_variants?.map((v) => v.stock) ?? [0]));
@@ -58,11 +60,6 @@ export default function ProductCard({ product, index = 0 }: { product: Product; 
               New
             </span>
           )}
-          {product.compare_at_price && (
-            <span className="absolute left-3 top-3 mt-8 rounded-full bg-gold px-3 py-1 text-[10px] uppercase tracking-wide text-white" style={{ top: product.is_new ? "2.75rem" : "0.75rem" }}>
-              Sale
-            </span>
-          )}
           {lowestStock === 0 && (
             <div className="absolute inset-0 flex items-center justify-center bg-black/40">
               <span className="rounded-full bg-white px-4 py-1.5 text-xs">Sold Out</span>
@@ -72,7 +69,7 @@ export default function ProductCard({ product, index = 0 }: { product: Product; 
           <button
             onClick={(e) => {
               e.preventDefault();
-              toggle(product.id);
+              requireAuth(() => toggle(product.id));
             }}
             aria-label="Toggle wishlist"
             className="absolute right-3 top-3 rounded-full bg-white/85 p-2 opacity-0 backdrop-blur transition group-hover:opacity-100"

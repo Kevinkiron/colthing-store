@@ -8,7 +8,6 @@ type Row = {
   id: string;
   request_number: string;
   customer_name: string;
-  garment_type: string;
   status: string;
   created_at: string;
   materials: { name: string } | null;
@@ -22,7 +21,7 @@ export default function AdminCustomRequestsPage() {
   useEffect(() => {
     supabase
       .from("custom_requests")
-      .select("id, request_number, customer_name, garment_type, status, created_at, materials(name)")
+      .select("id, request_number, customer_name, status, created_at, materials(name)")
       .order("created_at", { ascending: false })
       .then(({ data }) => {
         setRows((data as unknown as Row[]) ?? []);
@@ -45,7 +44,6 @@ export default function AdminCustomRequestsPage() {
                 <th className="p-4">Request</th>
                 <th className="p-4">Customer</th>
                 <th className="p-4">Material</th>
-                <th className="p-4">Garment</th>
                 <th className="p-4">Status</th>
                 <th className="p-4">Submitted</th>
               </tr>
@@ -58,7 +56,6 @@ export default function AdminCustomRequestsPage() {
                   </td>
                   <td className="p-4">{r.customer_name}</td>
                   <td className="p-4 text-black/60">{r.materials?.name ?? "—"}</td>
-                  <td className="p-4 capitalize">{r.garment_type}</td>
                   <td className="p-4">
                     <span
                       className={cn(

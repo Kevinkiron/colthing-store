@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Heart, ShoppingBag, Menu, X, User } from "lucide-react";
 import { useCartStore } from "@/store/cart-store";
@@ -12,18 +13,27 @@ const links = [
   { href: "/custom-request", label: "Create Custom" },
 ];
 
+// Only the homepage has a full-bleed dark hero behind the nav — every other
+// page starts with a light/white background, so the nav must always render
+// in its "scrolled" (light bg, dark text) style there, or the white-on-white
+// text becomes invisible.
 export default function Navbar() {
-  const [scrolled, setScrolled] = useState(false);
+  const pathname = usePathname();
+  const isHome = pathname === "/";
+  const [scrolledPast, setScrolledPast] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const open = useCartStore((s) => s.open);
   const count = useCartStore((s) => s.count());
 
+  const scrolled = !isHome || scrolledPast;
+
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40);
+    if (!isHome) return;
+    const onScroll = () => setScrolledPast(window.scrollY > 40);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+  }, [isHome]);
 
   return (
     <header

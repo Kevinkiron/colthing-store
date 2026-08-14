@@ -19,7 +19,6 @@ export default function MaterialForm({ material }: { material?: Material }) {
   const [description, setDescription] = useState(material?.description ?? "");
   const [composition, setComposition] = useState(material?.composition ?? "");
   const [color, setColor] = useState(material?.color ?? "");
-  const [texture, setTexture] = useState(material?.texture ?? "");
   const [characteristics, setCharacteristics] = useState(material?.characteristics ?? "");
   const [care, setCare] = useState(material?.care_instructions ?? "");
   const [mainImage, setMainImage] = useState(material?.main_image ?? "");
@@ -65,7 +64,7 @@ export default function MaterialForm({ material }: { material?: Material }) {
     try {
       const payload = {
         name, slug, description,
-        composition, color, texture, characteristics, care_instructions: care,
+        composition, color, characteristics, care_instructions: care,
         main_image: mainImage || null, is_active: isActive, is_featured: isFeatured,
       };
 
@@ -131,10 +130,6 @@ export default function MaterialForm({ material }: { material?: Material }) {
         </div>
       </div>
 
-      <div>
-        <label className="mb-1 block text-xs text-black/50">Texture</label>
-        <textarea value={texture ?? ""} onChange={(e) => setTexture(e.target.value)} rows={2} className="w-full rounded-lg border border-black/15 px-3 py-2.5 text-sm" />
-      </div>
       <div>
         <label className="mb-1 block text-xs text-black/50">Characteristics</label>
         <textarea value={characteristics ?? ""} onChange={(e) => setCharacteristics(e.target.value)} rows={2} className="w-full rounded-lg border border-black/15 px-3 py-2.5 text-sm" />

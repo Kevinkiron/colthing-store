@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { publicSupabase } from "@/lib/supabase/public";
 import { getProductBySlug } from "@/lib/queries";
 import ProductDetailClient from "@/components/product/ProductDetailClient";
+import { SITE_URL } from "@/lib/seo";
 
 export async function generateMetadata({
   params,
@@ -41,5 +42,34 @@ export default async function ProductPage({
   const product = await getProductBySlug(publicSupabase, slug);
   if (!product) notFound();
 
-  return <ProductDetailClient product={product} />;
+  const inStock = (product.product_variants ?? []).some((v) => v.stock > 0);
+  const image = product.product_images?.[0]?.url;
+
+  // Invisible to visitors — this only feeds search engines, letting Google
+  // show price/availability directly in the search result for this page.
+  const productJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.name,
+    description: product.description ?? undefined,
+    image: image ? [image] : undefined,
+    sku: product.sku ?? undefined,
+    offers: {
+      "@type": "Offer",
+      url: `${SITE_URL}/product/${product.slug}`,
+      priceCurrency: "INR",
+      price: product.base_price,
+      availability: inStock ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+    },
+  };
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
+      />
+      <ProductDetailClient product={product} />
+    </>
+  );
 }

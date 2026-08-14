@@ -1,10 +1,11 @@
 "use client";
 import { Suspense, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Image from "next/image";
 import { Upload, X, Loader2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
-import type { GarmentType, Material } from "@/lib/types";
-import { GARMENT_TYPE_LABELS } from "@/lib/measurementFields";
+import type { Material } from "@/lib/types";
+import { cn } from "@/lib/utils";
 import MeasurementFields from "@/components/custom/MeasurementFields";
 import SavedProfilesPicker from "@/components/custom/SavedProfilesPicker";
 
@@ -18,13 +19,11 @@ function CustomRequestFormInner() {
   const [materialSlug, setMaterialSlug] = useState(params.get("material") ?? "");
   const inspiredProductSlug = params.get("product");
 
-  const [garmentType, setGarmentType] = useState<GarmentType>("shirt");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [description, setDescription] = useState("");
   const [preferredFit, setPreferredFit] = useState("Regular");
-  const [colorRequirements, setColorRequirements] = useState("");
   const [additionalRequirements, setAdditionalRequirements] = useState("");
   const [measurements, setMeasurements] = useState<Record<string, string>>({});
   const [images, setImages] = useState<{ url: string; type: "reference" | "sketch" | "inspiration" }[]>([]);
@@ -81,11 +80,10 @@ function CustomRequestFormInner() {
           customer_phone: phone,
           material_id: material?.id ?? null,
           inspired_by_product_id: inspiredProductId,
-          garment_type: garmentType,
+          garment_type: "other",
           description,
           measurements,
           preferred_fit: preferredFit,
-          color_requirements: colorRequirements,
           additional_requirements: additionalRequirements,
         })
         .select()
@@ -127,24 +125,34 @@ function CustomRequestFormInner() {
         <input required placeholder="Phone" value={phone} onChange={(e) => setPhone(e.target.value)} className="rounded-lg border border-black/15 px-4 py-3 text-sm" />
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div>
-          <label className="mb-1 block text-xs text-espresso/50">Material</label>
-          <select required value={materialSlug} onChange={(e) => setMaterialSlug(e.target.value)} className="w-full rounded-lg border border-black/15 px-4 py-3 text-sm">
-            <option value="">Select a material</option>
+      <div>
+        <label className="mb-2 block text-xs text-espresso/50">Material</label>
+        {materials.length === 0 ? (
+          <p className="text-xs text-espresso/40">Loading materials...</p>
+        ) : (
+          <div className="grid grid-cols-3 gap-3 sm:grid-cols-4">
             {materials.map((m) => (
-              <option key={m.id} value={m.slug}>{m.name}</option>
+              <button
+                key={m.id}
+                type="button"
+                onClick={() => setMaterialSlug(m.slug)}
+                className={cn(
+                  "group overflow-hidden rounded-xl border-2 text-left transition",
+                  materialSlug === m.slug ? "border-gold" : "border-transparent hover:border-black/15"
+                )}
+              >
+                <div className="relative aspect-square bg-cream">
+                  {m.main_image && (
+                    <Image src={m.main_image} alt={m.name} fill className="object-cover" />
+                  )}
+                </div>
+                <p className={cn("mt-1.5 truncate text-xs", materialSlug === m.slug ? "text-espresso" : "text-espresso/60")}>
+                  {m.name}
+                </p>
+              </button>
             ))}
-          </select>
-        </div>
-        <div>
-          <label className="mb-1 block text-xs text-espresso/50">Garment Type</label>
-          <select value={garmentType} onChange={(e) => setGarmentType(e.target.value as GarmentType)} className="w-full rounded-lg border border-black/15 px-4 py-3 text-sm">
-            {Object.entries(GARMENT_TYPE_LABELS).map(([value, label]) => (
-              <option key={value} value={value}>{label}</option>
-            ))}
-          </select>
-        </div>
+          </div>
+        )}
       </div>
 
       <div>
@@ -159,14 +167,11 @@ function CustomRequestFormInner() {
         />
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div>
-          <label className="mb-1 block text-xs text-espresso/50">Preferred Fit</label>
-          <select value={preferredFit} onChange={(e) => setPreferredFit(e.target.value)} className="w-full rounded-lg border border-black/15 px-4 py-3 text-sm">
-            {["Slim", "Regular", "Relaxed", "Oversized"].map((f) => <option key={f}>{f}</option>)}
-          </select>
-        </div>
-        <input placeholder="Colour requirements (optional)" value={colorRequirements} onChange={(e) => setColorRequirements(e.target.value)} className="rounded-lg border border-black/15 px-4 py-3 text-sm" />
+      <div>
+        <label className="mb-1 block text-xs text-espresso/50">Preferred Fit</label>
+        <select value={preferredFit} onChange={(e) => setPreferredFit(e.target.value)} className="w-full rounded-lg border border-black/15 px-4 py-3 text-sm sm:max-w-xs">
+          {["Slim", "Regular", "Relaxed", "Oversized"].map((f) => <option key={f}>{f}</option>)}
+        </select>
       </div>
 
       <textarea
@@ -178,9 +183,14 @@ function CustomRequestFormInner() {
       />
 
       <div className="border-t border-black/10 pt-6">
-        <p className="mb-4 font-display text-lg">Measurements</p>
-        <SavedProfilesPicker garmentType={garmentType} onSelect={setMeasurements} />
-        <MeasurementFields garmentType={garmentType} values={measurements} onChange={(field, value) => setMeasurements((m) => ({ ...m, [field]: value }))} />
+        <p className="mb-3 font-display text-lg">Measurements</p>
+        <p className="mb-4 rounded-lg bg-gold/10 px-4 py-3 text-xs text-espresso/70">
+          Don&apos;t know your measurements yet? No problem —{" "}
+          <a href="/contact" className="font-medium underline underline-offset-2">reach out to us</a>{" "}
+          and we&apos;ll help you get them, or leave this section blank and we&apos;ll contact you.
+        </p>
+        <SavedProfilesPicker garmentType="other" onSelect={setMeasurements} />
+        <MeasurementFields garmentType="other" values={measurements} onChange={(field, value) => setMeasurements((m) => ({ ...m, [field]: value }))} />
       </div>
 
       <div>

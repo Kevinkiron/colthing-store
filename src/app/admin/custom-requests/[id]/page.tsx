@@ -132,7 +132,6 @@ export default function AdminCustomRequestDetailPage() {
           <p className="font-display mb-3 text-lg">Request Details</p>
           <p className="text-sm"><span className="text-black/40">Material:</span> {request.materials?.name ?? "—"}</p>
           <p className="text-sm"><span className="text-black/40">Inspired by:</span> {request.products?.name ?? "—"}</p>
-          <p className="text-sm capitalize"><span className="text-black/40">Garment:</span> {request.garment_type}</p>
           <p className="text-sm"><span className="text-black/40">Fit:</span> {request.preferred_fit ?? "—"}</p>
           <p className="text-sm"><span className="text-black/40">Colour:</span> {request.color_requirements ?? "—"}</p>
           <p className="text-sm"><span className="text-black/40">Delivery by:</span> {request.desired_delivery_date ?? "—"}</p>

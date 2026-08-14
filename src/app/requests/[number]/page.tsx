@@ -160,7 +160,6 @@ export default function RequestStatusPage() {
           <h2 className="font-display text-xl">Your Request</h2>
           <p className="mt-3 text-sm text-espresso/70">{request.description}</p>
           <dl className="mt-4 space-y-2 text-sm text-espresso/60">
-            <div><dt className="inline text-espresso/40">Garment: </dt><dd className="inline capitalize">{request.garment_type}</dd></div>
             {request.preferred_fit && <div><dt className="inline text-espresso/40">Fit: </dt><dd className="inline">{request.preferred_fit}</dd></div>}
             {request.color_requirements && <div><dt className="inline text-espresso/40">Colour: </dt><dd className="inline">{request.color_requirements}</dd></div>}
             {request.desired_delivery_date && <div><dt className="inline text-espresso/40">Desired delivery: </dt><dd className="inline">{request.desired_delivery_date}</dd></div>}

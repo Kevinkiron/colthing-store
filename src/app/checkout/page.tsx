@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useCartStore } from "@/store/cart-store";
@@ -12,6 +12,8 @@ export default function CheckoutPage() {
   const subtotal = useCartStore((s) => s.subtotal());
   const clear = useCartStore((s) => s.clear);
 
+  const [checkedAuth, setCheckedAuth] = useState(false);
+
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -23,6 +25,21 @@ export default function CheckoutPage() {
   });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      if (!data.session) {
+        router.replace("/account/login?redirect=/checkout");
+        return;
+      }
+      setForm((f) => ({ ...f, email: f.email || data.session!.user.email || "" }));
+      setCheckedAuth(true);
+    });
+  }, []);
+
+  if (!checkedAuth) {
+    return <div className="flex min-h-screen items-center justify-center text-sm text-espresso/40">Loading...</div>;
+  }
 
   if (lines.length === 0) {
     return (

@@ -5,14 +5,15 @@ import { createClient } from "@/lib/supabase/client";
 import type { Category } from "@/lib/types";
 import { slugify } from "@/lib/utils";
 
-type FormState = { id?: string; name: string; slug: string; description: string; sort_order: string; is_active: boolean };
-const emptyForm: FormState = { name: "", slug: "", description: "", sort_order: "0", is_active: true };
+type FormState = { id?: string; name: string; slug: string; sort_order: string; is_active: boolean };
+const emptyForm: FormState = { name: "", slug: "", sort_order: "0", is_active: true };
 
 export default function AdminCategoriesPage() {
   const supabase = createClient();
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState<FormState | null>(null);
+  const [slugTouched, setSlugTouched] = useState(false);
   const [saving, setSaving] = useState(false);
 
   async function load() {
@@ -26,16 +27,17 @@ export default function AdminCategoriesPage() {
 
   function openNew() {
     setForm({ ...emptyForm });
+    setSlugTouched(false);
   }
   function openEdit(c: Category) {
     setForm({
       id: c.id,
       name: c.name,
       slug: c.slug,
-      description: c.description ?? "",
       sort_order: String(c.sort_order),
       is_active: c.is_active,
     });
+    setSlugTouched(true);
   }
 
   async function save() {
@@ -44,7 +46,6 @@ export default function AdminCategoriesPage() {
     const payload = {
       name: form.name,
       slug: form.slug || slugify(form.name),
-      description: form.description || null,
       sort_order: parseInt(form.sort_order || "0", 10),
       is_active: form.is_active,
     };
@@ -119,9 +120,24 @@ export default function AdminCategoriesPage() {
               <button onClick={() => setForm(null)}><X className="h-5 w-5" /></button>
             </div>
             <div className="space-y-3">
-              <input placeholder="Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value, slug: form.slug || slugify(e.target.value) })} className="w-full rounded-lg border border-black/15 px-3 py-2 text-sm" />
-              <input placeholder="Slug" value={form.slug} onChange={(e) => setForm({ ...form, slug: e.target.value })} className="w-full rounded-lg border border-black/15 px-3 py-2 text-sm" />
-              <textarea placeholder="Description" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={2} className="w-full rounded-lg border border-black/15 px-3 py-2 text-sm" />
+              <input
+                placeholder="Name"
+                value={form.name}
+                onChange={(e) => {
+                  const name = e.target.value;
+                  setForm((f) => (f ? { ...f, name, slug: slugTouched ? f.slug : slugify(name) } : f));
+                }}
+                className="w-full rounded-lg border border-black/15 px-3 py-2 text-sm"
+              />
+              <input
+                placeholder="Slug"
+                value={form.slug}
+                onChange={(e) => {
+                  setSlugTouched(true);
+                  setForm((f) => (f ? { ...f, slug: e.target.value } : f));
+                }}
+                className="w-full rounded-lg border border-black/15 px-3 py-2 text-sm"
+              />
               <input type="number" placeholder="Sort order" value={form.sort_order} onChange={(e) => setForm({ ...form, sort_order: e.target.value })} className="w-full rounded-lg border border-black/15 px-3 py-2 text-sm" />
               <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={form.is_active} onChange={(e) => setForm({ ...form, is_active: e.target.checked })} /> Active</label>
             </div>

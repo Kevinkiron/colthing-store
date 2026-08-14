@@ -5,8 +5,7 @@ import Link from "next/link";
 import { Trash2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { formatPrice, cn } from "@/lib/utils";
-import type { GarmentType, MeasurementProfile } from "@/lib/types";
-import { GARMENT_TYPE_LABELS } from "@/lib/measurementFields";
+import type { MeasurementProfile } from "@/lib/types";
 import MeasurementFields from "@/components/custom/MeasurementFields";
 
 type Tab = "orders" | "requests" | "measurements";
@@ -39,7 +38,6 @@ export default function AccountPage() {
   const [profiles, setProfiles] = useState<MeasurementProfile[]>([]);
 
   const [newLabel, setNewLabel] = useState("");
-  const [newGarmentType, setNewGarmentType] = useState<GarmentType>("shirt");
   const [newMeasurements, setNewMeasurements] = useState<Record<string, string>>({});
   const [savingProfile, setSavingProfile] = useState(false);
 
@@ -68,7 +66,7 @@ export default function AccountPage() {
     }
     const { data, error } = await supabase
       .from("measurement_profiles")
-      .insert({ user_id: userId, label: newLabel, garment_type: newGarmentType, measurements: newMeasurements })
+      .insert({ user_id: userId, label: newLabel, garment_type: "other", measurements: newMeasurements })
       .select()
       .single();
     if (!error && data) {
@@ -152,7 +150,7 @@ export default function AccountPage() {
               <Link key={r.id} href={`/requests/${r.request_number}?email=${encodeURIComponent(email)}`} className="flex items-center justify-between rounded-xl border border-black/10 p-4 transition hover:border-gold">
                 <div>
                   <p className="font-display text-sm">{r.request_number}</p>
-                  <p className="text-xs text-espresso/50 capitalize">{r.garment_type} — {new Date(r.created_at).toLocaleDateString()}</p>
+                  <p className="text-xs text-espresso/50">{new Date(r.created_at).toLocaleDateString()}</p>
                 </div>
                 <span className="rounded-full bg-black/5 px-2.5 py-0.5 text-xs capitalize">{r.status.replace(/_/g, " ")}</span>
               </Link>
@@ -170,7 +168,7 @@ export default function AccountPage() {
               profiles.map((p) => (
                 <div key={p.id} className="rounded-xl border border-black/10 p-4">
                   <div className="flex items-center justify-between">
-                    <p className="font-display text-sm">{p.label} <span className="text-xs text-espresso/40">({GARMENT_TYPE_LABELS[p.garment_type]})</span></p>
+                    <p className="font-display text-sm">{p.label}</p>
                     <button onClick={() => deleteProfile(p.id)} aria-label="Delete profile"><Trash2 className="h-4 w-4 text-black/40" /></button>
                   </div>
                   <p className="mt-2 text-xs text-espresso/50">
@@ -183,15 +181,10 @@ export default function AccountPage() {
 
           <div className="mt-8 rounded-2xl bg-cream/50 p-6">
             <p className="mb-4 font-display text-lg">Add a Measurement Profile</p>
-            <div className="mb-4 grid gap-4 sm:grid-cols-2">
-              <input placeholder="Label, e.g. Standard" value={newLabel} onChange={(e) => setNewLabel(e.target.value)} className="rounded-lg border border-black/15 px-4 py-3 text-sm" />
-              <select value={newGarmentType} onChange={(e) => setNewGarmentType(e.target.value as GarmentType)} className="rounded-lg border border-black/15 px-4 py-3 text-sm">
-                {Object.entries(GARMENT_TYPE_LABELS).map(([value, label]) => (
-                  <option key={value} value={value}>{label}</option>
-                ))}
-              </select>
+            <div className="mb-4">
+              <input placeholder="Label, e.g. Standard" value={newLabel} onChange={(e) => setNewLabel(e.target.value)} className="w-full rounded-lg border border-black/15 px-4 py-3 text-sm sm:max-w-xs" />
             </div>
-            <MeasurementFields garmentType={newGarmentType} values={newMeasurements} onChange={(field, value) => setNewMeasurements((m) => ({ ...m, [field]: value }))} />
+            <MeasurementFields garmentType="other" values={newMeasurements} onChange={(field, value) => setNewMeasurements((m) => ({ ...m, [field]: value }))} />
             <button disabled={savingProfile || !newLabel} onClick={saveProfile} className="mt-4 rounded-full bg-espresso px-6 py-2.5 text-sm text-white disabled:opacity-40">
               {savingProfile ? "Saving..." : "Save Profile"}
             </button>

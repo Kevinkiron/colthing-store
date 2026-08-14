@@ -10,6 +10,13 @@ export function cn(...classes: Array<string | false | null | undefined>) {
   return classes.filter(Boolean).join(" ");
 }
 
+export function splitList(input: string) {
+  return input
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
+
 export function slugify(input: string) {
   return input
     .toLowerCase()

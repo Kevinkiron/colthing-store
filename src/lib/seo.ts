@@ -4,9 +4,9 @@ export const BUSINESS_PHONE = "+919562572931";
 export const BUSINESS_INSTAGRAM = "https://www.instagram.com/knit__and_knot/";
 export const BUSINESS_WHATSAPP = "https://wa.me/919562572931";
 
-export const DEFAULT_TITLE = "Knit & Knot — Custom Tailoring in Trivandrum";
+export const DEFAULT_TITLE = "Knit & Knot — Custom Tailoring & Stitching Centre in Trivandrum";
 export const DEFAULT_DESCRIPTION =
-  "Knit & Knot is a custom tailoring centre in Trivandrum for working professionals and college students. Choose a material, customise a design, or request something fully bespoke — made to your measurements with doorstep delivery.";
+  "Knit & Knot is a custom tailoring and stitching centre in Trivandrum for working professionals and college students. Choose a material, customise a design, or order stitched clothing online — made to your measurements with doorstep delivery.";
 
 // A representative shot used as the default social-share / OG image until
 // a proper brand photo/logo is supplied.
