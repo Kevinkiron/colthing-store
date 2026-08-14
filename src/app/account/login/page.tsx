@@ -17,9 +17,6 @@ function AccountLoginInner() {
   const [loading, setLoading] = useState(false);
   const [showCreatedPopup, setShowCreatedPopup] = useState(false);
 
-  const [newsletterEmail, setNewsletterEmail] = useState("");
-  const [subscribed, setSubscribed] = useState(false);
-
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
@@ -65,36 +62,6 @@ function AccountLoginInner() {
       <button onClick={() => setMode(mode === "signin" ? "signup" : "signin")} className="mt-6 text-xs text-espresso/50 underline underline-offset-2">
         {mode === "signin" ? "New here? Create an account" : "Already have an account? Sign in"}
       </button>
-
-      <div className="mt-14 border-t border-black/10 pt-8">
-        <p className="mb-2 text-xs uppercase tracking-[0.2em] text-espresso/40">Join the atelier</p>
-        <p className="mb-4 text-sm text-espresso/60">
-          New materials, new designs, and styling notes — occasionally, thoughtfully.
-        </p>
-        {subscribed ? (
-          <p className="text-sm text-gold">You&apos;re on the list — welcome.</p>
-        ) : (
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              setSubscribed(true);
-            }}
-            className="flex overflow-hidden rounded-full border border-black/15"
-          >
-            <input
-              required
-              type="email"
-              value={newsletterEmail}
-              onChange={(e) => setNewsletterEmail(e.target.value)}
-              placeholder="Your email"
-              className="w-full bg-transparent px-4 py-3 text-sm outline-none placeholder:text-espresso/40"
-            />
-            <button type="submit" className="whitespace-nowrap bg-gold px-5 text-sm text-white">
-              Join
-            </button>
-          </form>
-        )}
-      </div>
 
       {showCreatedPopup && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 px-6">
