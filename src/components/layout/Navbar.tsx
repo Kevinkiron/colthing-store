@@ -32,9 +32,21 @@ export default function Navbar() {
   useEffect(() => {
     if (!isHome) return;
     const onScroll = () => setScrolledPast(window.scrollY > 40);
-    onScroll();
+
+    // Don't trust the very first reading synchronously — right after the
+    // hero image/fonts load, the browser's scroll-anchoring can nudge
+    // window.scrollY by a few pixels for a single frame, which was enough
+    // to flip the header to its solid "scrolled" style even while sitting
+    // at the very top of the page. Deferring one frame (and re-checking
+    // shortly after) lets that settle before we decide.
+    const raf = requestAnimationFrame(onScroll);
+    const settle = setTimeout(onScroll, 200);
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => {
+      cancelAnimationFrame(raf);
+      clearTimeout(settle);
+      window.removeEventListener("scroll", onScroll);
+    };
   }, [isHome]);
 
   // Mount flag so the drawer (rendered via a portal) only ever appears on

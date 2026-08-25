@@ -15,6 +15,11 @@
 
 html {
   scroll-behavior: auto;
+  /* Prevents the browser from silently nudging scroll position to "anchor"
+     to content that shifts as fonts/images finish loading above the fold —
+     that nudge was enough to briefly flip the homepage header out of its
+     transparent state even while sitting at the very top of the page. */
+  overflow-anchor: none;
 }
 
 body {
