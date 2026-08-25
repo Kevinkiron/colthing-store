@@ -2,15 +2,17 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Pencil, Trash2, Plus } from "lucide-react";
+import { Pencil, Trash2, Plus, ZoomIn } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { formatPrice } from "@/lib/utils";
 import type { Product } from "@/lib/types";
+import { ImageZoomModal } from "@/components/ui/ImageLightbox";
 
 export default function ProductsTable() {
   const supabase = createClient();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [zoomImg, setZoomImg] = useState<string | null>(null);
 
   async function load() {
     setLoading(true);
@@ -28,11 +30,31 @@ export default function ProductsTable() {
 
   async function handleDelete(id: string) {
     if (!confirm("Delete this product? This cannot be undone.")) return;
-    await supabase.from("products").delete().eq("id", id);
+    const { error } = await supabase.from("products").delete().eq("id", id);
+
+    if (error) {
+      // Postgres foreign-key violation — this product has existing orders
+      // (order_items keeps a reference to it for order history), so it
+      // can't be hard-deleted. Offer to archive it instead, which hides it
+      // from the storefront (queries filter on status = 'active') without
+      // touching past orders.
+      if (error.code === "23503") {
+        const archive = confirm(
+          "This product can't be deleted because it's part of one or more existing orders (deleting it would break that order history).\n\nArchive it instead? This hides it from the shop immediately."
+        );
+        if (archive) {
+          await supabase.from("products").update({ status: "archived" }).eq("id", id);
+        }
+      } else {
+        alert("Something went wrong deleting this product. Please try again.");
+      }
+    }
+
     load();
   }
 
   return (
+    <>
     <div>
       <div className="mb-6 flex items-center justify-between">
         <h1 className="font-display text-3xl">Products</h1>
@@ -66,9 +88,21 @@ export default function ProductsTable() {
                 return (
                   <tr key={p.id} className="border-b border-black/5">
                     <td className="flex items-center gap-3 p-4">
-                      <div className="relative h-12 w-10 overflow-hidden rounded bg-cream">
-                        {img && <Image src={img} alt={p.name} fill className="object-cover" />}
-                      </div>
+                      {img ? (
+                        <button
+                          type="button"
+                          onClick={() => setZoomImg(img)}
+                          className="group relative h-12 w-10 shrink-0 overflow-hidden rounded bg-cream"
+                          aria-label="View larger image"
+                        >
+                          <Image src={img} alt={p.name} fill className="object-cover" />
+                          <span className="absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition group-hover:bg-black/30 group-hover:opacity-100">
+                            <ZoomIn className="h-3.5 w-3.5 text-white" />
+                          </span>
+                        </button>
+                      ) : (
+                        <div className="h-12 w-10 shrink-0 rounded bg-cream" />
+                      )}
                       {p.name}
                     </td>
                     <td className="p-4 text-black/60">{p.categories?.name ?? "—"}</td>
@@ -92,5 +126,7 @@ export default function ProductsTable() {
         </div>
       )}
     </div>
+    {zoomImg && <ImageZoomModal images={[{ url: zoomImg }]} onClose={() => setZoomImg(null)} />}
+    </>
   );
 }

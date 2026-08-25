@@ -1,10 +1,11 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Trash2, Upload, Loader2 } from "lucide-react";
+import { Trash2, Upload, Loader2, ZoomIn } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { slugify } from "@/lib/utils";
 import type { Material } from "@/lib/types";
+import { ImageZoomModal } from "@/components/ui/ImageLightbox";
 
 type ImageRow = { id?: string; url: string; image_type: "gallery" | "texture" | "lifestyle"; alt: string };
 
@@ -22,6 +23,7 @@ export default function MaterialForm({ material }: { material?: Material }) {
   const [characteristics, setCharacteristics] = useState(material?.characteristics ?? "");
   const [care, setCare] = useState(material?.care_instructions ?? "");
   const [mainImage, setMainImage] = useState(material?.main_image ?? "");
+  const [zoomImg, setZoomImg] = useState<string | null>(null);
   const [isActive, setIsActive] = useState(material?.is_active ?? true);
   const [isFeatured, setIsFeatured] = useState(material?.is_featured ?? false);
   const [images, setImages] = useState<ImageRow[]>(
@@ -102,6 +104,7 @@ export default function MaterialForm({ material }: { material?: Material }) {
   }
 
   return (
+    <>
     <form onSubmit={handleSubmit} className="max-w-3xl space-y-8 pb-24">
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
@@ -146,7 +149,23 @@ export default function MaterialForm({ material }: { material?: Material }) {
 
       <div>
         <label className="mb-1 block text-xs text-black/50">Main Image URL</label>
-        <input value={mainImage} onChange={(e) => setMainImage(e.target.value)} className="w-full rounded-lg border border-black/15 px-3 py-2.5 text-sm" placeholder="https://..." />
+        <div className="flex gap-3">
+          <input value={mainImage} onChange={(e) => setMainImage(e.target.value)} className="flex-1 rounded-lg border border-black/15 px-3 py-2.5 text-sm" placeholder="https://..." />
+          {mainImage && (
+            <button
+              type="button"
+              onClick={() => setZoomImg(mainImage)}
+              className="group relative h-11 w-11 shrink-0 overflow-hidden rounded-lg border border-black/15"
+              aria-label="View larger image"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={mainImage} alt="Main preview" className="h-full w-full object-cover" />
+              <span className="absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition group-hover:bg-black/30 group-hover:opacity-100">
+                <ZoomIn className="h-4 w-4 text-white" />
+              </span>
+            </button>
+          )}
+        </div>
       </div>
 
       <div>
@@ -163,10 +182,15 @@ export default function MaterialForm({ material }: { material?: Material }) {
         </div>
         <div className="grid grid-cols-4 gap-3">
           {images.map((img, i) => (
-            <div key={i} className="relative">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={img.url} alt={img.alt} className="h-20 w-full rounded-lg object-cover" />
-              <span className="absolute left-1 top-1 rounded bg-black/60 px-1.5 py-0.5 text-[9px] capitalize text-white">{img.image_type}</span>
+            <div key={i} className="group relative">
+              <button type="button" onClick={() => setZoomImg(img.url)} className="block w-full" aria-label="View larger image">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={img.url} alt={img.alt} className="h-20 w-full rounded-lg object-cover" />
+                <span className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/0 opacity-0 transition group-hover:bg-black/30 group-hover:opacity-100">
+                  <ZoomIn className="h-4 w-4 text-white" />
+                </span>
+              </button>
+              <span className="pointer-events-none absolute left-1 top-1 rounded bg-black/60 px-1.5 py-0.5 text-[9px] capitalize text-white">{img.image_type}</span>
               <button
                 type="button"
                 onClick={() => {
@@ -194,5 +218,7 @@ export default function MaterialForm({ material }: { material?: Material }) {
         {saving ? "Saving..." : material ? "Save Changes" : "Create Material"}
       </button>
     </form>
+    {zoomImg && <ImageZoomModal images={[{ url: zoomImg }]} onClose={() => setZoomImg(null)} />}
+    </>
   );
 }

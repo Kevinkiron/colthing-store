@@ -5,6 +5,7 @@ import Link from "next/link";
 import { publicSupabase } from "@/lib/supabase/public";
 import { getMaterialBySlug } from "@/lib/queries";
 import { formatPrice, splitList } from "@/lib/utils";
+import ImageLightbox from "@/components/ui/ImageLightbox";
 
 export async function generateMetadata({
   params,
@@ -101,13 +102,11 @@ export default async function MaterialDetailPage({
         </div>
 
         {(gallery.length > 0 || texture.length > 0 || lifestyle.length > 0) && (
-          <div className="mt-16 grid grid-cols-2 gap-4 md:grid-cols-4">
-            {[...gallery, ...texture, ...lifestyle].map((img) => (
-              <div key={img.id} className="relative aspect-square overflow-hidden rounded-xl bg-cream">
-                <Image src={img.url} alt={img.alt ?? material.name} fill className="object-cover" />
-              </div>
-            ))}
-          </div>
+          <ImageLightbox
+            images={[...gallery, ...texture, ...lifestyle].map((img) => ({ url: img.url, alt: img.alt ?? material.name }))}
+            className="mt-16 grid grid-cols-2 gap-4 md:grid-cols-4"
+            itemClassName="aspect-square rounded-xl bg-cream"
+          />
         )}
       </div>
 

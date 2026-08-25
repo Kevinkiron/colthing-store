@@ -3,13 +3,14 @@ import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Heart, Minus, Plus, Ruler, Sparkles, Wand2 } from "lucide-react";
+import { Heart, Minus, Plus, Ruler, Sparkles, Wand2, ZoomIn } from "lucide-react";
 import type { Product } from "@/lib/types";
 import { formatPrice, cn, splitList } from "@/lib/utils";
 import { useCartStore } from "@/store/cart-store";
 import { useWishlistStore } from "@/store/wishlist-store";
 import { useRequireAuth } from "@/lib/useRequireAuth";
 import SizeGuideModal from "@/components/product/SizeGuideModal";
+import { ImageZoomModal } from "@/components/ui/ImageLightbox";
 
 export default function ProductDetailClient({ product }: { product: Product }) {
   const images = (product.product_images ?? []).sort((a, b) => a.sort_order - b.sort_order);
@@ -20,6 +21,7 @@ export default function ProductDetailClient({ product }: { product: Product }) {
   const [size, setSize] = useState(sizes[0] ?? "");
   const [showSizeGuide, setShowSizeGuide] = useState(false);
   const [qty, setQty] = useState(1);
+  const [zoomOpen, setZoomOpen] = useState(false);
 
   const addLine = useCartStore((s) => s.addLine);
   const toggle = useWishlistStore((s) => s.toggle);
@@ -45,7 +47,12 @@ export default function ProductDetailClient({ product }: { product: Product }) {
     <main className="mx-auto max-w-7xl px-6 pb-24 pt-32 md:px-10">
       <div className="grid gap-10 md:grid-cols-2 md:gap-16">
         <div>
-          <div className="relative aspect-[3/4] overflow-hidden rounded-2xl bg-cream">
+          <button
+            type="button"
+            onClick={() => images[activeImage] && setZoomOpen(true)}
+            className="group relative block aspect-[3/4] w-full overflow-hidden rounded-2xl bg-cream"
+            aria-label="View larger image"
+          >
             {images[activeImage] && (
               <Image
                 src={images[activeImage].url}
@@ -55,7 +62,17 @@ export default function ProductDetailClient({ product }: { product: Product }) {
                 priority
               />
             )}
-          </div>
+            <span className="absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition group-hover:bg-black/10 group-hover:opacity-100">
+              <ZoomIn className="h-8 w-8 text-white drop-shadow" />
+            </span>
+          </button>
+          {zoomOpen && (
+            <ImageZoomModal
+              images={images.map((img) => ({ url: img.url, alt: img.alt ?? product.name }))}
+              initialIndex={activeImage}
+              onClose={() => setZoomOpen(false)}
+            />
+          )}
           {images.length > 1 && (
             <div className="mt-4 flex gap-3">
               {images.map((img, i) => (

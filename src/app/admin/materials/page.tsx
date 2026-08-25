@@ -2,14 +2,16 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Plus, Pencil, Trash2 } from "lucide-react";
+import { Plus, Pencil, Trash2, ZoomIn } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import type { Material } from "@/lib/types";
+import { ImageZoomModal } from "@/components/ui/ImageLightbox";
 
 export default function AdminMaterialsPage() {
   const supabase = createClient();
   const [materials, setMaterials] = useState<Material[]>([]);
   const [loading, setLoading] = useState(true);
+  const [zoomImg, setZoomImg] = useState<string | null>(null);
 
   async function load() {
     setLoading(true);
@@ -26,6 +28,7 @@ export default function AdminMaterialsPage() {
   }
 
   return (
+    <>
     <div>
       <div className="mb-6 flex items-center justify-between">
         <h1 className="font-display text-3xl">Materials</h1>
@@ -52,9 +55,21 @@ export default function AdminMaterialsPage() {
               {materials.map((m) => (
                 <tr key={m.id} className="border-b border-black/5">
                   <td className="flex items-center gap-3 p-4">
-                    <div className="relative h-12 w-12 overflow-hidden rounded bg-cream">
-                      {m.main_image && <Image src={m.main_image} alt={m.name} fill className="object-cover" />}
-                    </div>
+                    {m.main_image ? (
+                      <button
+                        type="button"
+                        onClick={() => setZoomImg(m.main_image)}
+                        className="group relative h-12 w-12 shrink-0 overflow-hidden rounded bg-cream"
+                        aria-label="View larger image"
+                      >
+                        <Image src={m.main_image} alt={m.name} fill className="object-cover" />
+                        <span className="absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition group-hover:bg-black/30 group-hover:opacity-100">
+                          <ZoomIn className="h-3.5 w-3.5 text-white" />
+                        </span>
+                      </button>
+                    ) : (
+                      <div className="h-12 w-12 shrink-0 rounded bg-cream" />
+                    )}
                     {m.name}
                     {m.is_featured && <span className="rounded-full bg-gold/10 px-2 py-0.5 text-[10px] text-gold">Featured</span>}
                   </td>
@@ -76,5 +91,7 @@ export default function AdminMaterialsPage() {
         </div>
       )}
     </div>
+    {zoomImg && <ImageZoomModal images={[{ url: zoomImg }]} onClose={() => setZoomImg(null)} />}
+    </>
   );
 }

@@ -1,11 +1,11 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import Image from "next/image";
 import { Plus, Trash2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { formatPrice } from "@/lib/utils";
 import type { CustomRequestStatus } from "@/lib/types";
+import ImageLightbox from "@/components/ui/ImageLightbox";
 
 const STATUS_OPTIONS: CustomRequestStatus[] = [
   "submitted", "under_review", "need_more_info", "quotation_ready", "approved",
@@ -159,13 +159,11 @@ export default function AdminCustomRequestDetailPage() {
       {request.custom_request_images.length > 0 && (
         <div className="mt-6 rounded-xl border border-black/10 bg-white p-6">
           <p className="font-display mb-3 text-lg">Reference Images</p>
-          <div className="grid grid-cols-4 gap-3 sm:grid-cols-6">
-            {request.custom_request_images.map((img) => (
-              <div key={img.id} className="relative aspect-square overflow-hidden rounded-lg bg-cream">
-                <Image src={img.url} alt="Reference" fill className="object-cover" />
-              </div>
-            ))}
-          </div>
+          <ImageLightbox
+            images={request.custom_request_images.map((img) => ({ url: img.url, alt: "Reference" }))}
+            className="grid grid-cols-4 gap-3 sm:grid-cols-6"
+            itemClassName="aspect-square rounded-lg bg-cream"
+          />
         </div>
       )}
 

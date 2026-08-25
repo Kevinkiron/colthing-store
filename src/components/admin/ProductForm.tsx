@@ -1,11 +1,12 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Trash2, Upload, Loader2 } from "lucide-react";
+import { Plus, Trash2, Upload, Loader2, ZoomIn } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { slugify } from "@/lib/utils";
 import { GARMENT_TYPE_LABELS } from "@/lib/measurementFields";
 import type { Category, GarmentType, Material, Product } from "@/lib/types";
+import { ImageZoomModal } from "@/components/ui/ImageLightbox";
 
 type ImageRow = { id?: string; url: string; alt: string };
 type VariantRow = { id?: string; size: string; sku: string; price: string; stock: string };
@@ -41,6 +42,7 @@ export default function ProductForm({ product }: { product?: Product }) {
   const [images, setImages] = useState<ImageRow[]>(
     product?.product_images?.map((i) => ({ id: i.id, url: i.url, alt: i.alt ?? "" })) ?? []
   );
+  const [zoomImg, setZoomImg] = useState<string | null>(null);
   const [variants, setVariants] = useState<VariantRow[]>(
     product?.product_variants?.map((v) => ({
       id: v.id, size: v.size, sku: v.sku ?? "",
@@ -188,6 +190,7 @@ export default function ProductForm({ product }: { product?: Product }) {
   }
 
   return (
+    <>
     <form onSubmit={handleSubmit} className="max-w-3xl space-y-8 pb-24">
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
@@ -293,7 +296,21 @@ export default function ProductForm({ product }: { product?: Product }) {
         </div>
         <div className="space-y-2">
           {images.map((img, i) => (
-            <div key={i} className="flex gap-2">
+            <div key={i} className="flex items-center gap-2">
+              {img.url && (
+                <button
+                  type="button"
+                  onClick={() => setZoomImg(img.url)}
+                  className="group relative h-10 w-10 shrink-0 overflow-hidden rounded-lg border border-black/15"
+                  aria-label="View larger image"
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={img.url} alt={img.alt || "Preview"} className="h-full w-full object-cover" />
+                  <span className="absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition group-hover:bg-black/30 group-hover:opacity-100">
+                    <ZoomIn className="h-3.5 w-3.5 text-white" />
+                  </span>
+                </button>
+              )}
               <input placeholder="Image URL" value={img.url} onChange={(e) => updateImage(i, { url: e.target.value })} className="flex-1 rounded-lg border border-black/15 px-3 py-2 text-xs" />
               <button type="button" onClick={() => removeImage(i)} aria-label="Remove image"><Trash2 className="h-4 w-4 text-black/40" /></button>
             </div>
@@ -357,5 +374,7 @@ export default function ProductForm({ product }: { product?: Product }) {
         {saving ? "Saving..." : product ? "Save Changes" : "Create Product"}
       </button>
     </form>
+    {zoomImg && <ImageZoomModal images={[{ url: zoomImg }]} onClose={() => setZoomImg(null)} />}
+    </>
   );
 }
