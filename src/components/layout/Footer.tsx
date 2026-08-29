@@ -48,7 +48,7 @@ export default function Footer() {
               <li><Link href="/contact">Contact Us</Link></li>
             </ul>
             <p className="mt-6 flex items-center gap-2 text-sm text-ivory/60">
-              <MapPin className="h-4 w-4 text-gold" /> Shipping pan-India
+              <MapPin className="h-4 w-4 text-gold" /> Delivery to India
             </p>
           </div>
         </div>
