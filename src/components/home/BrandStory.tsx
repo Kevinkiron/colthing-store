@@ -14,8 +14,8 @@ export default function BrandStory() {
           className="relative order-2 h-[420px] overflow-hidden rounded-2xl shadow-xl md:order-1 md:h-[560px]"
         >
           <Image
-            src="https://images.unsplash.com/photo-1601925260368-ae2f83cf8b7f?auto=format&fit=crop&w=1200&q=80"
-            alt="Close detail of woven fabric texture"
+            src="https://lh3.googleusercontent.com/gps-cs-s/AHRPTWlkWraAb0exW3ChF6cJXsJDqN6j3J64x1lmxR3s6R9cO64ZPrvcUX0GIWROAkcO02mAACtoc05_Z1wEsx0tOzMDoOclzYcc2BYkVMoK5_OLc4Bb5Y32irhCWFvzi4TKzgLvLgWuxwDYdAJg=w1600-h1200-k-no"
+            alt="Inside the Knit & Knot tailoring studio in Trivandrum"
             fill
             className="object-cover"
           />
