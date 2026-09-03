@@ -2,21 +2,19 @@
 import { motion } from "framer-motion";
 import { Ruler, Truck, Sparkles, ShieldCheck } from "lucide-react";
 
+// Real, written Google reviews for Knit & Knot (5.0 rating). Only reviews
+// that included actual written text are shown here — star-only ratings are
+// left out on purpose, per how the business wants this section to read.
 const testimonials = [
   {
-    name: "Ananya R.",
+    name: "Lekshmi Asok",
     quote:
-      "I picked the linen, tweaked the sleeve and collar, and got a shirt that fits better than anything off a rack. The whole process felt like working with a real tailor.",
+      "Great service at affordable price! No delays, no excuses. Perfect stitching too. Highly recommended!",
   },
   {
-    name: "Priya S.",
+    name: "Adithya K S",
     quote:
-      "I described a dress I couldn't find anywhere — oversized, a specific neckline — and Knit & Knot quoted it, made it, and it arrived exactly as I imagined.",
-  },
-  {
-    name: "Meera K.",
-    quote:
-      "The material pages are beautiful, and knowing exactly what fabric my garment is made from before I even choose a design made the whole decision easy.",
+      "10+ years aayi ivide aanu njan dress stitch cheyyunnath. Ithrayum varshathe experience ulla tailor aanu, athukond thanne fittingum finishingum always perfect aanu. Ente requirement manassilakki, athin anusarichu nalla neat aayittu stitch cheythu tharunnu. Quality, finishing, fitting ellam thanne excellent aanu. 10+ years aayittum same quality maintain cheyyunnu ennathaanu ettavum ishtappetta karyam. Highly recommended!",
   },
 ];
 
@@ -47,9 +45,10 @@ export default function Testimonials() {
         >
           <span className="text-xs uppercase tracking-[0.35em] text-gold">Loved by our customers</span>
           <h2 className="font-display mt-4 text-4xl md:text-5xl">Customer Love &amp; Feedback</h2>
+          <p className="mt-3 text-xs text-espresso/50">As shared by real customers on Google</p>
         </motion.div>
 
-        <div className="grid gap-6 md:grid-cols-3">
+        <div className="-mx-6 flex snap-x snap-mandatory gap-6 overflow-x-auto px-6 pb-4 md:mx-0 md:px-0 [scrollbar-width:thin]">
           {testimonials.map((t, i) => (
             <motion.div
               key={t.name}
@@ -57,7 +56,7 @@ export default function Testimonials() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.4 }}
               transition={{ duration: 0.6, delay: i * 0.1 }}
-              className="rounded-2xl border border-black/5 bg-white p-8 shadow-sm"
+              className="w-[85%] flex-shrink-0 snap-start rounded-2xl border border-black/5 bg-white p-8 shadow-sm sm:w-[60%] md:w-[calc(50%-0.75rem)]"
             >
               <p className="text-gold">★★★★★</p>
               <p className="mt-4 text-sm text-espresso/75">&ldquo;{t.quote}&rdquo;</p>
