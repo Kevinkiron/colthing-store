@@ -31,16 +31,21 @@ export default function Navbar() {
 
   useEffect(() => {
     if (!isHome) return;
-    const onScroll = () => setScrolledPast(window.scrollY > 40);
+    // On mobile, the browser itself scrolls the page a little on load to
+    // collapse the address bar into its compact form — that alone was
+    // enough to cross a low threshold and make the header look "scrolled"
+    // before the visitor ever touched the screen. 120px is comfortably
+    // above that automatic chrome-collapse amount, so only a real,
+    // deliberate scroll flips the header now.
+    const onScroll = () => setScrolledPast(window.scrollY > 120);
 
     // Don't trust the very first reading synchronously — right after the
     // hero image/fonts load, the browser's scroll-anchoring can nudge
-    // window.scrollY by a few pixels for a single frame, which was enough
-    // to flip the header to its solid "scrolled" style even while sitting
-    // at the very top of the page. Deferring one frame (and re-checking
-    // shortly after) lets that settle before we decide.
+    // window.scrollY by a few pixels for a single frame. Deferring one
+    // frame (and re-checking shortly after) lets that settle before we
+    // decide.
     const raf = requestAnimationFrame(onScroll);
-    const settle = setTimeout(onScroll, 200);
+    const settle = setTimeout(onScroll, 300);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => {
       cancelAnimationFrame(raf);

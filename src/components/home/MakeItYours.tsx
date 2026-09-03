@@ -39,8 +39,8 @@ export default function MakeItYours() {
           className="relative h-[360px] overflow-hidden rounded-2xl md:h-[440px]"
         >
           <Image
-            src="https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?auto=format&fit=crop&w=1100&q=80"
-            alt="Detail of tailoring and stitching"
+            src="https://ljzqszloghiladsjenzg.supabase.co/storage/v1/object/public/product-images/1788415850512-Gemini_Generated_Image_ikwtc9ikwtc9ikwt.png"
+            alt="Off-white embroidered kurti, an example of a customisable Knit & Knot design"
             fill
             className="object-cover"
           />

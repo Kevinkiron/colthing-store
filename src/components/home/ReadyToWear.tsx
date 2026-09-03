@@ -38,16 +38,16 @@ export default function ReadyToWear({ products }: { products: Product[] }) {
                 </div>
                 <p className="font-display mt-3 text-sm">{p.name}</p>
                 <p className="text-xs text-espresso/50">{formatPrice(p.base_price)}</p>
-                <div className="mt-3 flex gap-2">
+                <div className="mt-3 flex flex-col gap-2 sm:flex-row">
                   <Link
                     href={`/product/${p.slug}`}
-                    className="flex-1 rounded-full border border-espresso/20 py-2 text-center text-[11px] uppercase tracking-wide transition hover:border-gold hover:text-gold"
+                    className="flex-1 whitespace-nowrap rounded-full border border-espresso/20 py-2 text-center text-[10px] uppercase tracking-wide transition hover:border-gold hover:text-gold sm:text-[11px]"
                   >
                     View Design
                   </Link>
                   <Link
                     href={`/product/${p.slug}`}
-                    className="flex-1 rounded-full bg-espresso py-2 text-center text-[11px] uppercase tracking-wide text-white transition hover:bg-charcoal"
+                    className="flex-1 whitespace-nowrap rounded-full bg-espresso py-2 text-center text-[10px] uppercase tracking-wide text-white transition hover:bg-charcoal sm:text-[11px]"
                   >
                     Buy As Shown
                   </Link>
