@@ -16,7 +16,12 @@ type OrderRow = {
   subtotal: number;
   status: string;
   created_at: string;
+  refund_status: string | null;
 };
+
+// A customer can call off an order themselves right up until it leaves the
+// studio. After that they need to talk to us.
+const CANCELLABLE = ["pending", "confirmed"];
 
 type RequestRow = {
   id: string;
@@ -37,6 +42,7 @@ export default function AccountPage() {
   const [requests, setRequests] = useState<RequestRow[]>([]);
   const [profiles, setProfiles] = useState<MeasurementProfile[]>([]);
 
+  const [cancellingId, setCancellingId] = useState<string | null>(null);
   const [newLabel, setNewLabel] = useState("");
   const [newMeasurements, setNewMeasurements] = useState<Record<string, string>>({});
   const [savingProfile, setSavingProfile] = useState(false);
@@ -50,7 +56,7 @@ export default function AccountPage() {
       setEmail(data.session.user.email ?? "");
       setChecked(true);
       const userId = data.session.user.id;
-      supabase.from("orders").select("id, order_number, subtotal, status, created_at").eq("user_id", userId).order("created_at", { ascending: false }).then(({ data }) => setOrders((data as OrderRow[]) ?? []));
+      supabase.from("orders").select("id, order_number, subtotal, status, created_at, refund_status").eq("user_id", userId).order("created_at", { ascending: false }).then(({ data }) => setOrders((data as OrderRow[]) ?? []));
       supabase.from("custom_requests").select("id, request_number, garment_type, status, created_at").eq("user_id", userId).order("created_at", { ascending: false }).then(({ data }) => setRequests((data as RequestRow[]) ?? []));
       supabase.from("measurement_profiles").select("*").eq("user_id", userId).order("created_at", { ascending: false }).then(({ data }) => setProfiles((data as MeasurementProfile[]) ?? []));
     });
@@ -75,6 +81,33 @@ export default function AccountPage() {
       setNewMeasurements({});
     }
     setSavingProfile(false);
+  }
+
+  async function cancelOrder(order: OrderRow) {
+    const confirmed = confirm(
+      `Cancel order #${order.order_number}?\n\nThis can't be undone. If you've already paid, we'll arrange your refund and it will reach you in 5–7 working days.`
+    );
+    if (!confirmed) return;
+
+    const reason = prompt("Could you tell us why? (optional)") ?? "";
+
+    setCancellingId(order.id);
+    const { error } = await supabase.rpc("cancel_order", {
+      p_order_id: order.id,
+      p_reason: reason,
+    });
+    setCancellingId(null);
+
+    if (error) {
+      alert(error.message || "We couldn't cancel that order. Please contact us and we'll sort it out.");
+      return;
+    }
+
+    setOrders((os) =>
+      os.map((o) =>
+        o.id === order.id ? { ...o, status: "cancelled", refund_status: "pending" } : o
+      )
+    );
   }
 
   async function deleteProfile(id: string) {
@@ -124,15 +157,48 @@ export default function AccountPage() {
             <p className="text-sm text-espresso/50">No orders yet.</p>
           ) : (
             orders.map((o) => (
-              <div key={o.id} className="flex items-center justify-between rounded-xl border border-black/10 p-4">
-                <div>
-                  <p className="font-display text-sm">#{o.order_number}</p>
-                  <p className="text-xs text-espresso/50">{new Date(o.created_at).toLocaleDateString()}</p>
+              <div key={o.id} className="rounded-xl border border-black/10 p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-display text-sm">#{o.order_number}</p>
+                    <p className="text-xs text-espresso/50">{new Date(o.created_at).toLocaleDateString()}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm font-medium">{formatPrice(o.subtotal)}</p>
+                    <span
+                      className={cn(
+                        "rounded-full px-2.5 py-0.5 text-xs capitalize",
+                        o.status === "cancelled" ? "bg-red-50 text-red-700" : "bg-black/5"
+                      )}
+                    >
+                      {o.status}
+                    </span>
+                  </div>
                 </div>
-                <div className="text-right">
-                  <p className="text-sm font-medium">{formatPrice(o.subtotal)}</p>
-                  <span className="rounded-full bg-black/5 px-2.5 py-0.5 text-xs capitalize">{o.status}</span>
-                </div>
+
+                {CANCELLABLE.includes(o.status) && (
+                  <div className="mt-3 border-t border-black/5 pt-3 text-right">
+                    <button
+                      onClick={() => cancelOrder(o)}
+                      disabled={cancellingId === o.id}
+                      className="text-xs text-red-600 underline underline-offset-2 transition hover:text-red-700 disabled:opacity-40"
+                    >
+                      {cancellingId === o.id ? "Cancelling..." : "Cancel this order"}
+                    </button>
+                  </div>
+                )}
+
+                {o.status === "cancelled" && o.refund_status === "pending" && (
+                  <p className="mt-3 border-t border-black/5 pt-3 text-xs text-espresso/55">
+                    Cancelled. Your refund is being arranged and should reach you within 5–7 working days.
+                  </p>
+                )}
+
+                {o.status === "cancelled" && o.refund_status === "refunded" && (
+                  <p className="mt-3 border-t border-black/5 pt-3 text-xs text-green-700">
+                    Cancelled and refunded.
+                  </p>
+                )}
               </div>
             ))
           )}
