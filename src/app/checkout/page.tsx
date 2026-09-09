@@ -81,6 +81,13 @@ export default function CheckoutPage() {
     setError(null);
 
     try {
+      const publicKey = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
+      if (!publicKey) {
+        throw new Error(
+          "Payments are not configured yet. Please contact us to complete your order."
+        );
+      }
+
       // ── Step 1: Load Razorpay script ────────────────────────────────────
       const scriptLoaded = await loadRazorpayScript();
       if (!scriptLoaded) {
@@ -88,10 +95,19 @@ export default function CheckoutPage() {
       }
 
       // ── Step 2: Create Razorpay order on the server ─────────────────────
+      // Only ids and quantities go up — the server works out what it costs.
+      const cartPayload = lines.map((l) => ({
+        product_id: l.productId,
+        variant_id: l.variantId,
+        size: l.size,
+        quantity: l.quantity,
+        item_type: l.itemType,
+      }));
+
       const createRes = await fetch("/api/razorpay/create-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount: subtotal }),
+        body: JSON.stringify({ items: cartPayload }),
       });
 
       if (!createRes.ok) {
@@ -108,7 +124,7 @@ export default function CheckoutPage() {
       // ── Step 3: Open Razorpay checkout popup ─────────────────────────────
       await new Promise<void>((resolve, reject) => {
         const options = {
-          key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+          key: publicKey,
           amount: razorpayOrder.amount,
           currency: razorpayOrder.currency,
           name: "Knit & Knot",
@@ -138,18 +154,7 @@ export default function CheckoutPage() {
                   razorpay_order_id: response.razorpay_order_id,
                   razorpay_signature: response.razorpay_signature,
                   form,
-                  items: lines.map((l) => ({
-                    product_id: l.productId,
-                    variant_id: l.variantId,
-                    product_name: l.name,
-                    size: l.size,
-                    quantity: l.quantity,
-                    unit_price: l.price,
-                    item_type: l.itemType,
-                    customization: l.customization ?? null,
-                    measurements: l.measurements ?? null,
-                    customization_price: l.customizationPrice,
-                  })),
+                  items: cartPayload,
                 }),
               });
 
