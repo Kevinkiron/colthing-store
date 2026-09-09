@@ -5,6 +5,32 @@ import { createClient } from "@/lib/supabase/client";
 import { useCartStore } from "@/store/cart-store";
 import { formatPrice } from "@/lib/utils";
 
+// ─── Razorpay global type ────────────────────────────────────────────────────
+declare global {
+  interface Window {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    Razorpay: new (options: Record<string, any>) => {
+      open(): void;
+      on(event: string, callback: () => void): void;
+    };
+  }
+}
+
+function loadRazorpayScript(): Promise<boolean> {
+  return new Promise((resolve) => {
+    if (document.getElementById("razorpay-script")) {
+      resolve(true);
+      return;
+    }
+    const script = document.createElement("script");
+    script.id = "razorpay-script";
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+}
+
 export default function CheckoutPage() {
   const router = useRouter();
   const supabase = createClient();
@@ -53,48 +79,106 @@ export default function CheckoutPage() {
     e.preventDefault();
     setSubmitting(true);
     setError(null);
-    try {
-      const { data: sessionData } = await supabase.auth.getSession();
 
-      // A single atomic call: validates and decrements stock, creates the
-      // order and its line items together, so inventory can never go out
-      // of sync with what was actually purchased (and two people can't
-      // both "win" the last unit of something).
-      const { data, error: rpcErr } = await supabase.rpc("place_order", {
-        p_user_id: sessionData.session?.user.id ?? null,
-        p_customer_name: form.name,
-        p_customer_email: form.email,
-        p_customer_phone: form.phone,
-        p_shipping_address: {
-          address: form.address,
-          city: form.city,
-          state: form.state,
-          pincode: form.pincode,
-        },
-        p_items: lines.map((l) => ({
-          product_id: l.productId,
-          variant_id: l.variantId,
-          product_name: l.name,
-          size: l.size,
-          quantity: l.quantity,
-          unit_price: l.price,
-          item_type: l.itemType,
-          customization: l.customization ?? null,
-          measurements: l.measurements ?? null,
-          customization_price: l.customizationPrice,
-        })),
+    try {
+      // ── Step 1: Load Razorpay script ────────────────────────────────────
+      const scriptLoaded = await loadRazorpayScript();
+      if (!scriptLoaded) {
+        throw new Error("Failed to load payment gateway. Please check your connection and try again.");
+      }
+
+      // ── Step 2: Create Razorpay order on the server ─────────────────────
+      const createRes = await fetch("/api/razorpay/create-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount: subtotal }),
       });
 
-      if (rpcErr) throw rpcErr;
-      const order = data?.[0];
-      if (!order) throw new Error("Order could not be placed.");
+      if (!createRes.ok) {
+        const err = await createRes.json();
+        throw new Error(err.error || "Could not initiate payment.");
+      }
 
-      clear();
-      router.push(`/checkout/success?order=${order.order_number}`);
+      const razorpayOrder = await createRes.json() as {
+        id: string;
+        amount: number;
+        currency: string;
+      };
+
+      // ── Step 3: Open Razorpay checkout popup ─────────────────────────────
+      await new Promise<void>((resolve, reject) => {
+        const options = {
+          key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+          amount: razorpayOrder.amount,
+          currency: razorpayOrder.currency,
+          name: "Knit & Knot",
+          description: `Order for ${lines.length} item${lines.length > 1 ? "s" : ""}`,
+          order_id: razorpayOrder.id,
+          prefill: {
+            name: form.name,
+            email: form.email,
+            contact: form.phone,
+          },
+          theme: { color: "#3d2b1f" }, // espresso brand colour
+          modal: {
+            ondismiss: () => reject(new Error("Payment was cancelled.")),
+          },
+          handler: async (response: {
+            razorpay_payment_id: string;
+            razorpay_order_id: string;
+            razorpay_signature: string;
+          }) => {
+            try {
+              // ── Step 4: Verify payment & place order ───────────────────
+              const verifyRes = await fetch("/api/razorpay/verify-payment", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  razorpay_payment_id: response.razorpay_payment_id,
+                  razorpay_order_id: response.razorpay_order_id,
+                  razorpay_signature: response.razorpay_signature,
+                  form,
+                  items: lines.map((l) => ({
+                    product_id: l.productId,
+                    variant_id: l.variantId,
+                    product_name: l.name,
+                    size: l.size,
+                    quantity: l.quantity,
+                    unit_price: l.price,
+                    item_type: l.itemType,
+                    customization: l.customization ?? null,
+                    measurements: l.measurements ?? null,
+                    customization_price: l.customizationPrice,
+                  })),
+                }),
+              });
+
+              if (!verifyRes.ok) {
+                const err = await verifyRes.json();
+                reject(new Error(err.error || "Payment verification failed."));
+                return;
+              }
+
+              const { order_number } = await verifyRes.json() as { order_number: string };
+              clear();
+              router.push(`/checkout/success?order=${order_number}`);
+              resolve();
+            } catch (err) {
+              reject(err);
+            }
+          },
+        };
+
+        const rzp = new window.Razorpay(options);
+        rzp.on("payment.failed", () => {
+          reject(new Error("Payment failed. Please try again or use a different payment method."));
+        });
+        rzp.open();
+      });
     } catch (err) {
       console.error(err);
       const message = err instanceof Error ? err.message : "";
-      setError(message || "Something went wrong placing your order. Please try again.");
+      setError(message || "Something went wrong. Please try again.");
     } finally {
       setSubmitting(false);
     }
@@ -131,20 +215,18 @@ export default function CheckoutPage() {
               className="rounded-lg border border-black/15 px-4 py-3 text-sm" />
           </div>
 
-          <p className="!mt-6 text-xs text-espresso/45">
-            This is a demo checkout — no payment is collected here. Your order
-            will be saved and Knit &amp; Knot will contact you to confirm
-            payment, measurements, and delivery.
-          </p>
-
           {error && <p className="text-sm text-red-600">{error}</p>}
 
           <button
             disabled={submitting}
             className="w-full rounded-full bg-espresso py-3.5 text-sm text-white hover:bg-charcoal disabled:opacity-50"
           >
-            {submitting ? "Placing order..." : `Place Order — ${formatPrice(subtotal)}`}
+            {submitting ? "Opening payment..." : `Pay Now — ${formatPrice(subtotal)}`}
           </button>
+
+          <p className="text-xs text-espresso/45 text-center">
+            Secured by Razorpay · UPI, Cards, Net Banking &amp; more
+          </p>
         </form>
 
         <div className="h-fit rounded-2xl border border-black/10 p-6">
@@ -170,7 +252,7 @@ export default function CheckoutPage() {
             ))}
           </ul>
           <div className="mt-4 flex justify-between border-t border-black/10 pt-4 font-medium">
-            <span>Subtotal</span>
+            <span>Total</span>
             <span>{formatPrice(subtotal)}</span>
           </div>
         </div>
