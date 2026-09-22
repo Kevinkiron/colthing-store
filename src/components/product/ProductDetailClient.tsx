@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { Heart, Minus, Plus, Ruler, Sparkles, Wand2, ZoomIn } from "lucide-react";
 import type { Product } from "@/lib/types";
 import { formatPrice, cn, splitList } from "@/lib/utils";
+import { bundleSavings, hasBundleOffer } from "@/lib/bundlePricing";
 import { useCartStore } from "@/store/cart-store";
 import { useWishlistStore } from "@/store/wishlist-store";
 import { useRequireAuth } from "@/lib/useRequireAuth";
@@ -36,6 +37,8 @@ export default function ProductDetailClient({ product }: { product: Product }) {
   const price = selectedVariant?.price ?? product.base_price;
   const maxQty = selectedVariant?.stock ?? 0;
   const inStock = maxQty > 0;
+  const bundleOffer = hasBundleOffer(product);
+  const currentSavings = bundleOffer ? bundleSavings(qty, price, product) : 0;
 
   // Stock differs per size, so clamp quantity whenever the selected variant
   // changes instead of letting it silently exceed what's actually in stock.
@@ -113,6 +116,21 @@ export default function ProductDetailClient({ product }: { product: Product }) {
             )}
           </div>
 
+          {bundleOffer && (
+            <div className="mt-4 flex flex-wrap gap-2">
+              {product.bundle_price_2 && (
+                <span className="rounded-full bg-gold/15 px-3 py-1.5 text-xs font-medium text-espresso">
+                  Buy 2 for {formatPrice(product.bundle_price_2)}
+                </span>
+              )}
+              {product.bundle_price_3 && (
+                <span className="rounded-full bg-gold/15 px-3 py-1.5 text-xs font-medium text-espresso">
+                  Buy 3 for {formatPrice(product.bundle_price_3)}
+                </span>
+              )}
+            </div>
+          )}
+
           <p className="mt-6 max-w-md text-sm text-espresso/65">{product.description}</p>
           {product.design_details && (
             <p className="mt-2 max-w-md text-sm text-espresso/50">{product.design_details}</p>
@@ -168,6 +186,11 @@ export default function ProductDetailClient({ product }: { product: Product }) {
               <Plus className="h-4 w-4" />
             </button>
           </div>
+          {currentSavings > 0 && (
+            <p className="mt-2 text-xs text-green-700">
+              You save {formatPrice(currentSavings)} at this quantity.
+            </p>
+          )}
 
           <div className="mt-8 space-y-3">
             <div className="flex gap-3">
@@ -188,6 +211,8 @@ export default function ProductDetailClient({ product }: { product: Product }) {
                     image: images[0]?.url ?? null,
                     quantity: qty,
                     maxStock: selectedVariant.stock,
+                    bundlePrice2: product.bundle_price_2,
+                    bundlePrice3: product.bundle_price_3,
                   });
                 }}
                 className="flex-1 rounded-full bg-espresso py-3.5 text-sm tracking-wide text-white transition hover:bg-charcoal disabled:opacity-40"

@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { useCartStore } from "@/store/cart-store";
+import { useCartStore, lineTotal } from "@/store/cart-store";
 import { formatPrice } from "@/lib/utils";
 
 // ─── Razorpay global type ────────────────────────────────────────────────────
@@ -241,7 +241,7 @@ export default function CheckoutPage() {
               <li key={l.cartLineId} className="text-espresso/70">
                 <div className="flex justify-between">
                   <span>{l.name} x{l.quantity}</span>
-                  <span>{formatPrice(l.price * l.quantity)}</span>
+                  <span>{formatPrice(lineTotal(l))}</span>
                 </div>
                 <span className="text-xs text-espresso/40">
                   {l.itemType === "customized" ? "Customized Design" : "Original Design"} — {l.size}

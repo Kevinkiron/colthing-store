@@ -2,6 +2,20 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { CartLine } from "@/lib/types";
+import { cheapestTotalForQuantity } from "@/lib/bundlePricing";
+
+// A line's true total, honouring any "buy 2 / buy 3" bundle price set on
+// the product. Customized items never carry a bundle price, so they fall
+// straight through to price * quantity as before.
+export function lineTotal(line: CartLine): number {
+  if (!line.bundlePrice2 && !line.bundlePrice3) {
+    return line.price * line.quantity;
+  }
+  return cheapestTotalForQuantity(line.quantity, line.price, {
+    bundle_price_2: line.bundlePrice2,
+    bundle_price_3: line.bundlePrice3,
+  });
+}
 
 type CartState = {
   lines: CartLine[];
@@ -63,7 +77,7 @@ export const useCartStore = create<CartState>()(
           ),
         })),
       clear: () => set({ lines: [] }),
-      subtotal: () => get().lines.reduce((sum, l) => sum + l.price * l.quantity, 0),
+      subtotal: () => get().lines.reduce((sum, l) => sum + lineTotal(l), 0),
       count: () => get().lines.reduce((sum, l) => sum + l.quantity, 0),
     }),
     { name: "knit-and-knot-cart" }

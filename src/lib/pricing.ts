@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { cheapestTotalForQuantity } from "@/lib/bundlePricing";
 
 export type IncomingItem = {
   product_id: string;
@@ -37,7 +38,7 @@ export async function priceCart(items: IncomingItem[]): Promise<
   const productIds = [...new Set(items.map((i) => i.product_id))];
   const { data: products, error: prodErr } = await supabase
     .from("products")
-    .select("id, name, base_price, status")
+    .select("id, name, base_price, status, bundle_price_2, bundle_price_3")
     .in("id", productIds);
 
   if (prodErr || !products) {
@@ -90,13 +91,24 @@ export async function priceCart(items: IncomingItem[]): Promise<
       return { ok: false, error: `Pricing unavailable for "${product.name}".` };
     }
 
+    // "Buy 2 for / buy 3 for" bundle pricing, applied per line (same product
+    // and same size). Compute the cheapest total for this quantity and
+    // spread it evenly across the units so unit_price * quantity still
+    // equals the line total everywhere it's read (order_items, admin panel,
+    // receipts) — no schema change needed to carry a separate discount.
+    const lineTotal = cheapestTotalForQuantity(quantity, unitPrice, {
+      bundle_price_2: product.bundle_price_2,
+      bundle_price_3: product.bundle_price_3,
+    });
+    const effectiveUnitPrice = lineTotal / quantity;
+
     priced.push({
       product_id: product.id,
       variant_id: item.variant_id,
       product_name: product.name,
       size: variant?.size ?? item.size,
       quantity,
-      unit_price: unitPrice,
+      unit_price: effectiveUnitPrice,
       item_type: "standard",
       customization: null,
       measurements: null,

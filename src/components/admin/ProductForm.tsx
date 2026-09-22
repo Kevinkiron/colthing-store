@@ -30,6 +30,8 @@ export default function ProductForm({ product }: { product?: Product }) {
   const [garmentType, setGarmentType] = useState<GarmentType>(product?.garment_type ?? "shirt");
   const [basePrice, setBasePrice] = useState(product?.base_price?.toString() ?? "");
   const [compareAtPrice, setCompareAtPrice] = useState(product?.compare_at_price?.toString() ?? "");
+  const [bundlePrice2, setBundlePrice2] = useState(product?.bundle_price_2?.toString() ?? "");
+  const [bundlePrice3, setBundlePrice3] = useState(product?.bundle_price_3?.toString() ?? "");
   const [sku, setSku] = useState(product?.sku ?? "");
   const [productionTime, setProductionTime] = useState(product?.production_time ?? "");
   const [fabric, setFabric] = useState(product?.fabric ?? "");
@@ -125,6 +127,8 @@ export default function ProductForm({ product }: { product?: Product }) {
         garment_type: garmentType,
         base_price: parseFloat(basePrice || "0"),
         compare_at_price: compareAtPrice ? parseFloat(compareAtPrice) : null,
+        bundle_price_2: bundlePrice2 ? parseFloat(bundlePrice2) : null,
+        bundle_price_3: bundlePrice3 ? parseFloat(bundlePrice3) : null,
         sku, production_time: productionTime, fabric, care_instructions: care,
         customization_enabled: customizationEnabled,
         is_featured: isFeatured, is_bestseller: isBestseller, is_new: isNew, status,
@@ -243,6 +247,29 @@ export default function ProductForm({ product }: { product?: Product }) {
         <div>
           <label className="mb-1 block text-xs text-black/50">Compare-at Price (₹, optional)</label>
           <input type="number" step="0.01" value={compareAtPrice} onChange={(e) => setCompareAtPrice(e.target.value)} className="w-full rounded-lg border border-black/15 px-3 py-2.5 text-sm" />
+        </div>
+      </div>
+
+      <div className="rounded-xl border border-black/10 bg-cream/40 p-4">
+        <p className="mb-1 text-xs font-medium text-black/60">Bundle Offer (optional)</p>
+        <p className="mb-3 text-xs text-black/40">
+          Set a total price for buying 2 or 3 of this item together. Leave blank for no offer at that tier. Customers see this on the product page and it&apos;s applied automatically in the cart.
+        </p>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div>
+            <label className="mb-1 block text-xs text-black/50">Buy 2 for (₹ total)</label>
+            <input type="number" step="0.01" min="0" value={bundlePrice2} onChange={(e) => setBundlePrice2(e.target.value)} placeholder="e.g. 1200" className="w-full rounded-lg border border-black/15 px-3 py-2.5 text-sm" />
+            {bundlePrice2 && basePrice && parseFloat(bundlePrice2) >= parseFloat(basePrice) * 2 && (
+              <p className="mt-1 text-xs text-amber-600">This isn&apos;t cheaper than buying 2 at the regular price ({(parseFloat(basePrice) * 2).toFixed(2)}).</p>
+            )}
+          </div>
+          <div>
+            <label className="mb-1 block text-xs text-black/50">Buy 3 for (₹ total)</label>
+            <input type="number" step="0.01" min="0" value={bundlePrice3} onChange={(e) => setBundlePrice3(e.target.value)} placeholder="e.g. 1700" className="w-full rounded-lg border border-black/15 px-3 py-2.5 text-sm" />
+            {bundlePrice3 && basePrice && parseFloat(bundlePrice3) >= parseFloat(basePrice) * 3 && (
+              <p className="mt-1 text-xs text-amber-600">This isn&apos;t cheaper than buying 3 at the regular price ({(parseFloat(basePrice) * 3).toFixed(2)}).</p>
+            )}
+          </div>
         </div>
       </div>
 

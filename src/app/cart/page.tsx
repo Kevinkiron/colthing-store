@@ -2,8 +2,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Minus, Plus, Trash2 } from "lucide-react";
-import { useCartStore } from "@/store/cart-store";
+import { useCartStore, lineTotal } from "@/store/cart-store";
 import { formatPrice } from "@/lib/utils";
+import { cheapestTotalForQuantity } from "@/lib/bundlePricing";
 
 export default function CartPage() {
   const lines = useCartStore((s) => s.lines);
@@ -58,8 +59,27 @@ export default function CartPage() {
                         <Plus className="h-3.5 w-3.5" />
                       </button>
                     </div>
-                    <p className="font-medium">{formatPrice(l.price * l.quantity)}</p>
+                    <div className="text-right">
+                      <p className="font-medium">{formatPrice(lineTotal(l))}</p>
+                      {lineTotal(l) < l.price * l.quantity && (
+                        <p className="text-xs text-green-700">
+                          Saved {formatPrice(l.price * l.quantity - lineTotal(l))}
+                        </p>
+                      )}
+                    </div>
                   </div>
+
+                  {/* Nudge towards the next bundle tier if it's one item away */}
+                  {l.itemType === "standard" && l.quantity === 1 && l.bundlePrice2 != null && (
+                    <p className="mt-2 text-xs text-gold">
+                      Add 1 more for {formatPrice(l.bundlePrice2 - l.price)} more to get 2 for {formatPrice(l.bundlePrice2)}.
+                    </p>
+                  )}
+                  {l.itemType === "standard" && l.quantity === 2 && l.bundlePrice3 != null && (
+                    <p className="mt-2 text-xs text-gold">
+                      Add 1 more for {formatPrice(Math.max(0, l.bundlePrice3 - cheapestTotalForQuantity(2, l.price, { bundle_price_2: l.bundlePrice2, bundle_price_3: l.bundlePrice3 })))} more to get 3 for {formatPrice(l.bundlePrice3)}.
+                    </p>
+                  )}
                 </div>
               </li>
             ))}

@@ -83,6 +83,8 @@ export type Product = {
   material_id: string | null;
   base_price: number;
   compare_at_price: number | null;
+  bundle_price_2: number | null;
+  bundle_price_3: number | null;
   sku: string | null;
   fabric: string | null;
   care_instructions: string | null;
@@ -195,6 +197,8 @@ export type CartLine = {
   image: string | null;
   quantity: number;
   maxStock: number;
+  bundlePrice2?: number | null;
+  bundlePrice3?: number | null;
   customization?: SelectedCustomization[];
   measurements?: Record<string, string>;
 };

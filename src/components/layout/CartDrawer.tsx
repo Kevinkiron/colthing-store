@@ -3,7 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Minus, Plus, Trash2 } from "lucide-react";
-import { useCartStore } from "@/store/cart-store";
+import { useCartStore, lineTotal } from "@/store/cart-store";
 import { formatPrice } from "@/lib/utils";
 
 export default function CartDrawer() {
@@ -74,7 +74,14 @@ export default function CartDrawer() {
                               <Plus className="h-3 w-3" />
                             </button>
                           </div>
-                          <p className="text-sm font-medium">{formatPrice(l.price * l.quantity)}</p>
+                          <div className="text-right">
+                            <p className="text-sm font-medium">{formatPrice(lineTotal(l))}</p>
+                            {lineTotal(l) < l.price * l.quantity && (
+                              <p className="text-[11px] text-green-700">
+                                Saved {formatPrice(l.price * l.quantity - lineTotal(l))}
+                              </p>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </li>
